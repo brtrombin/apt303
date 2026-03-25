@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pinterest Downloader</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#1A1510;color:#F4EFE4;margin:0;padding:24px}
+h1{color:#C49A28;font-size:20px;margin-bottom:4px}
+.sub{color:#BFB8AA;font-size:13px;margin:4px 0 16px 0}
+button{background:#C15B35;color:white;border:none;padding:10px 22px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;margin:8px 4px 8px 0}
+button:hover{background:#C49A28}
+#log{background:#2E2318;border-radius:8px;padding:12px 16px;margin:12px 0;min-height:80px;max-height:300px;overflow-y:auto;font-size:11.5px;color:#BFB8AA;white-space:pre-wrap;font-family:monospace}
+#fileinput{display:none}
+#step2{display:none}
+.badge{display:inline-block;background:#49583A;color:#F4EFE4;border-radius:4px;padding:2px 8px;font-size:12px}
+#counter{font-size:28px;font-weight:bold;color:#C49A28;display:inline}
+</style>
+</head>
+<body>
+<h1>📌 Pinterest → Briefing</h1>
+<p class="sub">Salvar imagens de referência direto na pasta do projeto</p>
+<div id="step1">
+  <p>Clique e selecione a pasta <strong>Apartamento Fabrício Pilar</strong>:</p>
+  <button onclick="grantAccess()">🔓 Selecionar pasta do projeto</button>
+</div>
+<div id="step2">
+  <p>✅ Pasta: <span class="badge" id="folderName">—</span></p>
+  <p>Imagens salvas: <span id="counter">0</span></p>
+  <input type="file" id="fileinput" accept="image/*" multiple onchange="handleFiles(this.files)">
+  <button onclick="document.getElementById('fileinput').click()">📷 Upload manual</button>
+</div>
+<div id="log">Aguardando seleção de pasta...</div>
+<script>
+window.dirHandle=null;window._savedCount=0;
+async function grantAccess(){
+  try{
+    window.dirHandle=await window.showDirectoryPicker({mode:'readwrite'});
+    document.getElementById('folderName').textContent=window.dirHandle.name;
+    document.getElementById('step1').style.display='none';
+    document.getElementById('step2').style.display='block';
+    log('✅ Acesso concedido: '+window.dirHandle.name);
+  }catch(e){log('❌ Erro: '+e.message);}
+}
+async function saveBlob(filename,blob){
+  if(!window.dirHandle){log('❌ Pasta não selecionada');return false;}
+  try{
+    const fh=await window.dirHandle.getFileHandle(filename,{create:true});
+    const w=await fh.createWritable();
+    await w.write(blob);await w.close();
+    window._savedCount++;
+    document.getElementById('counter').textContent=window._savedCount;
+    log('✅ '+filename+' ('+Math.round(blob.size/1024)+'KB)');
+    return true;
+  }catch(e){log('❌ '+filename+': '+e.message);return false;}
+}
+async function handleFiles(files){
+  for(const file of files){
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    await saveBlob('pin_manual_'+Date.now()+'.'+ext,file);
+  }
+}
+window.saveFromUrl=async function(filename,url){
+  log('⬇️ '+url.substring(0,70));
+  try{
+    const r=await fetch(url,{mode:'cors'});
+    if(!r.ok){log('❌ HTTP '+r.status);return false;}
+    const b=await r.blob();
+    return await saveBlob(filename,b);
+  }catch(e){log('❌ fetch: '+e.message);return false;}
+};
+window.getStatus=function(){return{saved:window._savedCount,hasAccess:!!window.dirHandle,folder:window.dirHandle?window.dirHandle.name:null};};
+function log(msg){const el=document.getElementById('log');const ts=new Date().toLocaleTimeString('pt-BR');el.textContent+='\n['+ts+'] '+msg;el.scrollTop=el.scrollHeight;}
+</script>
+</body>
+</html>

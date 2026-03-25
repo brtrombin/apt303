@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Reforma — Projeto Skorpius</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --dark:#1A1510; --walnut:#3A2518; --terra:#C15B35; --bordo:#7D2535;
+    --verde:#49583A; --amber:#C49A28; --creme:#F4EFE4; --creme-d:#BFB8AA;
+    --mid:#7A5C40; --rule:#2E2318;
+  }
+  html,body { height:100%; background:#0e0b08; font-family:'Georgia',serif; color:var(--creme); }
+  #shell { display:flex; height:100vh; overflow:hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width:200px; min-width:200px; background:var(--rule);
+    display:flex; flex-direction:column; padding:24px 0;
+    border-right:1px solid #1a120a; overflow-y:auto;
+  }
+  #sidebar h1 {
+    font-size:10px; letter-spacing:.18em; color:var(--amber);
+    padding:0 20px 20px; border-bottom:1px solid var(--walnut);
+    text-transform:uppercase; font-family:'Helvetica Neue',sans-serif; font-weight:700;
+  }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:11px 20px;
+    cursor:pointer; font-family:'Helvetica Neue',sans-serif; font-size:11px;
+    color:var(--creme-d); border-left:3px solid transparent; transition:all .15s; user-select:none;
+  }
+  .nav-item:hover { background:rgba(255,255,255,.04); color:var(--creme); }
+  .nav-item.active { color:var(--creme); background:rgba(255,255,255,.06); }
+  .nav-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  /* MAIN */
+  #main { flex:1; overflow-y:auto; position:relative; }
+
+  /* PAGE */
+  .page { display:none; min-height:100vh; background:var(--dark); position:relative; }
+  .page.active { display:block; }
+
+  /* Left accent stripe */
+  .stripe {
+    position:fixed; left:200px; top:0; width:5px; height:100vh;
+    background:var(--terra); z-index:10; pointer-events:none;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    background:var(--rule); padding:22px 48px 18px;
+    border-bottom:1px solid #1a120a;
+  }
+  .page-header h2 {
+    font-family:'Helvetica Neue',sans-serif; font-size:26px; font-weight:800;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--creme);
+  }
+  .adjectives {
+    margin-top:6px; font-family:'Helvetica Neue',sans-serif; font-size:11px;
+    font-weight:700; letter-spacing:.12em;
+  }
+
+  /* TWO COLUMNS */
+  .columns { display:grid; grid-template-columns:1fr 340px; }
+  .col-left  { padding:28px 28px 28px 48px; }
+  .col-right {
+    padding:28px 28px 28px 20px;
+    border-left:1px solid var(--walnut); background:rgba(0,0,0,.12);
+  }
+
+  /* SECTION TITLE */
+  .st {
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--terra);
+    border-bottom:1px solid var(--terra); padding-bottom:4px;
+    margin-bottom:12px; margin-top:22px;
+  }
+  .st:first-child { margin-top:0; }
+  .st.verde  { color:var(--verde);  border-color:var(--verde); }
+  .st.amber  { color:var(--amber);  border-color:var(--amber); }
+  .st.bordo  { color:var(--bordo);  border-color:var(--bordo); }
+  .st.mid    { color:var(--mid);    border-color:var(--mid); }
+
+  /* VISION */
+  .vision {
+    font-size:14px; line-height:1.8; color:var(--creme-d); font-style:italic;
+    border-left:3px solid var(--terra); padding-left:16px; margin-bottom:4px;
+  }
+
+  /* BULLETS */
+  ul.brief { list-style:none; padding:0; margin:0; }
+  ul.brief li {
+    font-family:'Helvetica Neue',sans-serif; font-size:12.5px; color:var(--creme);
+    padding:5px 0 5px 18px; position:relative; line-height:1.5;
+    border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  ul.brief li::before {
+    content:''; position:absolute; left:4px; top:12px;
+    width:6px; height:6px; border-radius:50%; background:var(--terra);
+  }
+  ul.brief.verde li::before { background:var(--verde); }
+  ul.brief.amber li::before { background:var(--amber); }
+  ul.brief.bordo li::before { background:var(--bordo); }
+  ul.brief.mid li::before   { background:var(--mid); }
+
+  /* DATA TABLE */
+  .dt { width:100%; }
+  .dt td { font-family:'Helvetica Neue',sans-serif; font-size:12px; padding:5px 0; vertical-align:top; border-bottom:1px solid rgba(255,255,255,.04); }
+  .dt td:first-child { color:var(--amber); font-weight:700; width:40%; padding-right:10px; }
+  .dt td:last-child { color:var(--creme); }
+
+  /* PILLS */
+  .pills { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .pill {
+    background:var(--walnut); color:var(--creme);
+    font-family:'Helvetica Neue',sans-serif; font-size:10px; font-weight:700;
+    letter-spacing:.1em; padding:4px 12px; border-radius:12px; text-transform:uppercase;
+  }
+
+  /* NON-NEGOTIABLES */
+  .nna { display:grid; grid-template-columns:10px 1fr; gap:0 12px; align-items:start; padding:8px 0; border-bottom:1px solid var(--walnut); }
+  .nna-dot { width:8px; height:8px; border-radius:50%; background:var(--terra); margin-top:4px; }
+  .nna strong { display:block; font-family:'Helvetica Neue',sans-serif; font-size:12.5px; font-weight:700; color:var(--creme); }
+  .nna span   { font-family:'Helvetica Neue',sans-serif; font-size:11px; color:var(--creme-d); }
+
+  /* TAG */
+  .tag {
+    display:inline-block; background:var(--walnut); color:var(--terra);
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.08em; padding:2px 8px; border-radius:3px; vertical-align:middle;
+    margin-right:6px; text-transform:uppercase;
+  }
+
+  /* QUESTION ROW */
+  .qr {
+    display:flex; align-items:baseline; gap:10px; padding:7px 0;
+    border-bottom:1px solid rgba(255,255,255,.04);
+    font-family:'Helvetica Neue',sans-serif; font-size:12.5px; color:var(--creme);
+  }
+
+  /* PHOTO PLACEHOLDER */
+  .photo {
+    background:var(--walnut); border-radius:4px; display:flex;
+    align-items:center; justify-content:center; aspect-ratio:4/3;
+    color:var(--mid); font-family:'Helvetica Neue',sans-serif; font-size:11px;
+    text-align:center; padding:12px; margin-bottom:6px;
+  }
+
+  /* FILMSTRIP */
+  .filmstrip-label {
+    background:var(--rule); padding:5px 16px;
+    font-family:'Helvetica Neue',sans-serif; font-size:8px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--mid); text-align:center;
+    border-top:2px solid var(--rule);
+  }
+  .filmstrip { display:flex; gap:3px; overflow:hidden; }
+  .filmstrip-slot {
+    flex:1; background:var(--walnut); aspect-ratio:4/3;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; color:var(--mid);
+    text-align:center; overflow:hidden;
+  }
+  .filmstrip-slot img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* SWATCHES */
+  .swatches { display:flex; gap:6px; margin:8px 0; }
+  .swatch { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .sw { width:32px; height:20px; border-radius:3px; }
+  .sl { font-family:'Helvetica Neue',sans-serif; font-size:8px; color:var(--mid); }
+
+  /* SIGNOFF */
+  .signoff { background:var(--walnut); border-radius:6px; padding:18px 24px; margin-top:24px; }
+  .signoff strong { display:block; color:var(--terra); font-family:'Helvetica Neue',sans-serif; font-size:13px; margin-bottom:4px; }
+  .signoff p { color:var(--creme-d); font-family:'Helvetica Neue',sans-serif; font-size:11px; line-height:1.7; }
+
+  /* FOOTER */
+  .pfoot {
+    background:var(--rule); padding:8px 48px; display:flex;
+    justify-content:space-between; align-items:center; border-top:1px solid #1a120a;
+  }
+  .pfoot span { font-family:'Helvetica Neue',sans-serif; font-size:9px; color:var(--mid); letter-spacing:.1em; text-transform:uppercase; }
+
+  /* CAPA */
+  .capa-grid { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - 40px); }
+  .capa-left { padding:48px; display:flex; flex-direction:column; }
+  .capa-right {
+    background:var(--rule);
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px),
+      repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .capa-right-inner { color:var(--mid); font-family:'Helvetica Neue',sans-serif; font-size:11px; text-align:center; padding:20px; }
+  .ct { font-family:'Helvetica Neue',sans-serif; font-weight:900; font-size:52px; letter-spacing:.04em; color:var(--creme); line-height:1; margin-bottom:4px; }
+  .cs { font-family:'Helvetica Neue',sans-serif; font-weight:700; font-size:28px; color:var(--terra); letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px; }
+  .cr { width:80px; height:3px; background:var(--terra); margin-bottom:20px; }
+  .ci { font-family:'Helvetica Neue',sans-serif; font-size:13px; color:var(--creme-d); line-height:1.8; margin-bottom:28px; }
+
+  @media print {
+    #sidebar { display:none; }
+    .page { display:block !important; page-break-after:always; }
+    .stripe { position:absolute; }
+  }
+</style>
+</head>
+<body>
+<div id="shell">
+
+<!-- STRIPE (fixed left border) -->
+<div class="stripe" id="stripe"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <h1>Projeto Skorpius</h1>
+  <div class="nav-item active" data-page="capa" onclick="go('capa',this)">
+    <span class="nav-dot" style="background:#C15B35"></span> Capa
+  </div>
+  <div class="nav-item" data-page="overview" onclick="go('overview',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Visão Geral
+  </div>
+  <div class="nav-item" data-page="sala" onclick="go('sala',this)">
+    <span class="nav-dot" style="background:#C15B35"></span> Sala de Estar
+  </div>
+  <div class="nav-item" data-page="quarto" onclick="go('quarto',this)">
+    <span class="nav-dot" style="background:#49583A"></span> Quarto Casal
+  </div>
+  <div class="nav-item" data-page="cozinha" onclick="go('cozinha',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Cozinha
+  </div>
+  <div class="nav-item" data-page="banheiros" onclick="go('banheiros',this)">
+    <span class="nav-dot" style="background:#7D2535"></span> Banheiros
+  </div>
+  <div class="nav-item" data-page="escritorio" onclick="go('escritorio',this)">
+    <span class="nav-dot" style="background:#7A5C40"></span> 2&#186; Quarto / Escrit&#243;rio
+  </div>
+  <div class="nav-item" data-page="proximos" onclick="go('proximos',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Pr&#243;ximos Passos
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- ══════════════════════════ PAGE 1 — CAPA ══════════════════════════ -->
+<section class="page active" id="page-capa">
+  <div class="capa-grid">
+    <div class="capa-left">
+      <div class="ct">BRIEFING</div>
+      <div class="cs">Reforma</div>
+      <div class="cr"></div>
+      <div class="ci">
+        Ed&#237;f&#237;cio Skorpius &mdash; Apto 303<br>
+        Rua Ten. Cel. Fabr&#237;cio Pilar, 571 &mdash; Porto Alegre<br>
+        74 m&#178; &middot; Constru&#231;&#227;o 1975/1976 &middot; 3&#186; Pavimento
+      </div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;margin-bottom:4px">Propriet&#225;rios</div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:13px;color:var(--creme);margin-bottom:4px">Bruno Trombin &amp; Raquel Ramos da Fonseca</div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--mid)">Mar&#231;o de 2026</div>
+      <div style="margin-top:36px">
+        <div class="st">Estilo Base</div>
+        <div class="pills">
+          <span class="pill">70s Modernismo</span>
+          <span class="pill">Japandi</span>
+          <span class="pill">Mid-Century</span>
+          <span class="pill">Bo&#234;mio</span>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <div class="st amber">Paleta</div>
+        <div class="swatches">
+          <div class="swatch"><div class="sw" style="background:#1A1510"></div><div class="sl">#1A1510</div></div>
+          <div class="swatch"><div class="sw" style="background:#3A2518"></div><div class="sl">#3A2518</div></div>
+          <div class="swatch"><div class="sw" style="background:#C15B35"></div><div class="sl">#C15B35</div></div>
+          <div class="swatch"><div class="sw" style="background:#7D2535"></div><div class="sl">#7D2535</div></div>
+          <div class="swatch"><div class="sw" style="background:#49583A"></div><div class="sl">#49583A</div></div>
+          <div class="swatch"><div class="sw" style="background:#C49A28"></div><div class="sl">#C49A28</div></div>
+          <div class="swatch"><div class="sw" style="background:#F4EFE4"></div><div class="sl">#F4EFE4</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="capa-right">
+      <div class="capa-right-inner">
+        Cobog&#243;s &mdash; padr&#227;o original<br>Ed&#237;f&#237;cio Skorpius &middot; 1975/1976
+      </div>
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Capa</span><span>1 / 8</span></div>
+</section>
+
+<!-- ══════════════════════ PAGE 2 — VISÃO GERAL ══════════════════════ -->
+<section class="page" id="page-overview">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Vis&#227;o Geral do Projeto</h2>
+    <div class="adjectives" style="color:var(--amber)">Contexto &middot; Conceito &middot; N&#227;o-negoci&#225;veis</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st">Sobre o Im&#243;vel</div>
+      <table class="dt">
+        <tr><td>Endere&#231;o</td><td>Rua Ten. Cel. Fabr&#237;cio Pilar, 571 &mdash; Apto 303</td></tr>
+        <tr><td>Bairro</td><td>Mont Serrat, Porto Alegre / RS</td></tr>
+        <tr><td>&#193;rea privativa</td><td>74 m&#178; (&#225;rea total: 85 m&#178;)</td></tr>
+        <tr><td>Ed&#237;f&#237;cio</td><td>Ed&#237;f&#237;cio Skorpius</td></tr>
+        <tr><td>Constru&#231;&#227;o</td><td>1975 / 1976</td></tr>
+        <tr><td>Estrutura</td><td>Concreto armado</td></tr>
+        <tr><td>Pavimento</td><td>3&#186; pavimento</td></tr>
+        <tr><td>Garagem</td><td>Vaga n&#186; 9 &mdash; 16 m&#178; privativos</td></tr>
+      </table>
+      <div class="st">Escopo da Reforma</div>
+      <ul class="brief">
+        <li>Reforma PARCIAL &mdash; manuten&#231;&#227;o da estrutura existente</li>
+        <li>Abertura cozinha/sala: em defini&#231;&#227;o</li>
+        <li>Foco: est&#233;tica, acabamentos, mobili&#225;rio e ilumina&#231;&#227;o</li>
+        <li>Revelar taquinho sob vin&#237;lico (sala, quartos, corredor)</li>
+        <li>Integra&#231;&#227;o visual entrada &#8596; sala &#8596; cozinha</li>
+      </ul>
+      <div class="st">Estilo &amp; Sensa&#231;&#227;o por Ambiente</div>
+      <ul class="brief">
+        <li><strong>Social:</strong> 70s Modernismo &mdash; metal cromado, rattan, madeira escura</li>
+        <li><strong>Quarto casal:</strong> Japandi &mdash; serenidade, paleta fria, minimalismo</li>
+        <li><strong>Banheiro:</strong> Contraste marcante, DNA mid-century preservado</li>
+        <li><strong>Cozinha:</strong> Atel&#234; escuro, quente, personalidade pr&#243;pria, integrada</li>
+      </ul>
+      <div class="st bordo">O Que N&#227;o Queremos</div>
+      <ul class="brief bordo">
+        <li>Apartamento gen&#233;rico, "decorado de loja"</li>
+        <li>TV como elemento central de qualquer ambiente</li>
+        <li>Branco puro, cores frias, ambiente hospitalar</li>
+        <li>Madeira clara ou estilo escandinavo neutro</li>
+        <li>Excesso de objetos sem prop&#243;sito</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st" style="color:var(--terra);border-color:var(--terra);font-size:11px">N&#227;o Abrimos M&#227;o</div>
+      <p style="font-family:'Helvetica Neue',sans-serif;font-size:10px;color:var(--mid);margin-bottom:14px">Requisitos inegoci&#225;veis para o projeto</p>
+      <!-- LISTA NÃO ABRIMOS MÃO -->
+      <div class="nna"><div class="nna-dot"></div><div><strong>Janelas teladas</strong><span>todas as janelas do apartamento</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>M&#225;quina de lavar lou&#231;a</strong><span>instalada corretamente, integrada ao projeto</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Lava e seca</strong><span>&#225;rea de servi&#231;o planejada para ela</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Penteadeira</strong><span>no quarto casal &mdash; integrada ao projeto</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Sof&#225; &#8805; 2m</strong><span>com gatifica&#231;&#227;o integrada &#224; sala</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Mesa de jantar &#8805; 6 lugares</strong><span>elemento principal da &#225;rea social</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Estante de livros</strong><span>com poltrona confort&#225;vel para leitura</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Cozinha integrada &#224; sala</strong><span>sem isolamento entre cozinha e estar</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Casa n&#227;o centrada na TV</strong><span>a TV n&#227;o &#233; o foco de nenhum ambiente</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Mesa de entrada</strong><span>com lugar designado para deixar itens ao chegar</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Sapateira na entrada</strong><span>planejada e integrada ao corredor</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Gest&#227;o de cabos</strong><span>escrit&#243;rio, cozinha e TV &mdash; tudo organizado</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Modem e roteadores</strong><span>lugar planejado, escondido, sem fio &#224; vista</span></div></div>
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Vis&#227;o Geral</span><span>2 / 8</span></div>
+</section>
+
+<!-- ══════════════════════ PAGE 3 — SALA ══════════════════════ -->
+<section class="page" id="page-sala">
+  <div class="page-header" style="border-top:4px solid var(--terra)">
+    <h2>Sala de Estar</h2>
+    <div class="adjectives" style="color:var(--terra)">Acolhedora &middot; Com hist&#243;ria &middot; Para receber &middot; Cheia de vida</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st">O Que Queremos Sentir</div>
+      <p class="vision">
+        Uma sala que conta uma hist&#243;ria &mdash; n&#227;o uma vitrine de loja.
+        Queremos receber amigos, tomar vinho, ouvir m&#250;sica ao redor de
+        um ambiente com camadas: livros, plantas, objetos com mem&#243;ria.
+        Metal cromado presente (n&#227;o s&#243; como sotaque), madeira escura,
+        verde-musgo como cor de refer&#234;ncia dos tecidos. O DNA dos anos 70
+        do pr&#233;dio como inspira&#231;&#227;o &mdash; n&#227;o como tema ou fantasia.
+        A estante &#233; o centro da sala. A TV n&#227;o &#233;.
+      </p>
+      <div class="st">Decis&#245;es Confirmadas</div>
+      <ul class="brief">
+        <li>Sof&#225; &#8805; 2m &mdash; verde-musgo/veludo (ref. Togo / Estofados Lutes)</li>
+        <li>Poltronas estrutura tubular cromada + couro escuro (ref. Wassily)</li>
+        <li>Estante biblioteca parede inteira &mdash; elemento focal da sala</li>
+        <li>Mesa de jantar para 6+ pessoas &mdash; funcional e bonita</li>
+        <li>Espelho c&#244;ncavo/esf&#233;rico met&#225;lico grande &mdash; pe&#231;a principal</li>
+        <li>Luminária pendente (estilo Noguchi ou similar) &mdash; centro</li>
+        <li>Luminária de ch&#227;o &#226;mbar (linho ou rattan)</li>
+        <li>Tapete escuro como &#226;ncora do ambiente</li>
+        <li>Mesa de entrada + sapateira &mdash; corredor planejado</li>
+        <li>Ficus lyrata + Monstera em vasos cer&#226;micos grandes</li>
+        <li>Gatifica&#231;&#227;o integrada ao projeto da sala</li>
+        <li>SEM TV como foco &mdash; se houver, secund&#225;ria e discreta</li>
+      </ul>
+      <div class="st bordo">Quest&#245;es para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Integra&#231;&#227;o cozinha/sala: janela, passa-prato ou abertura?</li>
+        <li>Taquinho sob vin&#237;lico &mdash; condi&#231;&#227;o real s&#243; ap&#243;s remo&#231;&#227;o</li>
+        <li>Corredor de entrada: como criar continuidade visual com a sala?</li>
+        <li>P&#233; direito ~2,70m: ilumina&#231;&#227;o precisa ser estrat&#233;gica</li>
+        <li>Posi&#231;&#227;o da estante: parede mais longa ou parede de destaque?</li>
+        <li>Tapete: tamanho ideal para ancorar sem encolher o espa&#231;o?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo">IMG_8633 &mdash; Sala (&#226;ngulo 1)</div>
+      <div class="photo">IMG_8634 &mdash; Sala (&#226;ngulo 2)</div>
+      <div class="photo">IMG_8636 &mdash; Sala (&#226;ngulo 3)</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspira&#231;&#245;es &middot; Refer&#234;ncias Visuais</div>
+  <div class="filmstrip" id="film-sala">
+    <div class="filmstrip-slot">sala 01</div><div class="filmstrip-slot">sala 02</div>
+    <div class="filmstrip-slot">sala 03</div><div class="filmstrip-slot">sala 04</div>
+    <div class="filmstrip-slot">sala 05</div><div class="filmstrip-slot">sala 06</div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Sala de Estar</span><span>3 / 8</span></div>
+</section>
+
+<!-- ══════════════════════ PAGE 4 — QUARTO ══════════════════════ -->
+<section class="page" id="page-quarto">
+  <div class="page-header" style="border-top:4px solid var(--verde)">
+    <h2>Quarto Casal</h2>
+    <div class="adjectives" style="color:var(--verde)">Sereno &middot; Japandi &middot; &#205;ntimo &middot; Ref&#250;gio</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st verde">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--verde)">
+        Entrar e relaxar imediatamente. Paleta fria e serena &mdash;
+        azul japon&#234;s nas paredes. Piso taquinho escuro como base s&#243;lida.
+        Nada desnecess&#225;rio, cada objeto com prop&#243;sito.
+        Madeira walnut quente contrastando com o azul frio.
+        Tecidos naturais (linho, algod&#227;o) criando leveza.
+        Lumin&#225;ria de papel como &#250;nico ponto de calor &#226;mbar no frio do ambiente.
+        Penteadeira integrada ao projeto &mdash; n&#227;o um m&#243;vel comum de quarto.
+      </p>
+      <div class="st verde">Configura&#231;&#227;o Definida</div>
+      <ul class="brief verde">
+        <li>Dimens&#245;es: 2,85m &#215; 4,40m</li>
+        <li>Cabeceira: parede direita (em dire&#231;&#227;o &#224; janela)</li>
+        <li>Roupeiro: parede de fundo &mdash; 2m em walnut escuro</li>
+        <li>C&#244;moda + espelho: parede esquerda</li>
+        <li>Penteadeira: integrada ao projeto do quarto</li>
+        <li>Janela: parede superior / fundo</li>
+        <li>Porta: parede esquerda, abre em dire&#231;&#227;o ao fundo</li>
+      </ul>
+      <div class="st verde">Decis&#245;es Confirmadas</div>
+      <ul class="brief verde">
+        <li>Cama queen plataforma baixa &mdash; walnut escuro</li>
+        <li>2&#215; criados-mudos nogueira c/ gavetas</li>
+        <li>Roupeiro 2m walnut &mdash; parede de fundo</li>
+        <li>C&#244;moda walnut ~90cm &mdash; parede esquerda</li>
+        <li>Espelho 1,70 &#215; 1,10m, moldura metal escuro</li>
+        <li>Penteadeira planejada &mdash; integrada ao projeto</li>
+        <li>Paredes: azul-sereno japon&#234;s</li>
+        <li>Piso: taquinho pequeno padr&#227;o (confirmar)</li>
+        <li>Cortinas: linho ou algod&#227;o natural</li>
+        <li>Lumin&#225;ria de papel (Noguchi) &mdash; ponto &#226;mbar</li>
+      </ul>
+      <div class="st bordo">Quest&#245;es para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Vin&#237;lico sobre taquinho &mdash; condi&#231;&#227;o real ap&#243;s remo&#231;&#227;o</li>
+        <li>Ventila&#231;&#227;o: fluxo entre porta e janela &mdash; verificar</li>
+        <li>Luz de leitura: pontos dos dois lados da cama?</li>
+        <li>Penteadeira: onde melhor encaixar no layout?</li>
+        <li>Cabeceira: s&#243; encostada ou com nicho embutido?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo">IMG_8650 &mdash; Quarto casal (&#226;ngulo 1)</div>
+      <div class="photo">IMG_8647 &mdash; Quarto casal (&#226;ngulo 2)</div>
+      <div class="photo">IMG_8651 &mdash; Quarto casal (&#226;ngulo 3)</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspira&#231;&#245;es &middot; Refer&#234;ncias Visuais</div>
+  <div class="filmstrip" id="film-quarto">
+    <div class="filmstrip-slot">quarto 01</div><div class="filmstrip-slot">quarto 02</div>
+    <div class="filmstrip-slot">quarto 03</div><div class="filmstrip-slot">quarto 04</div>
+    <div class="filmstrip-slot">quarto 05</div><div class="filmstrip-slot">quarto 06</div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Quarto Casal</span><span>4 / 8</span></div>
+</section>
+
+<!-- ══════════════════════ PAGE 5 — COZINHA ══════════════════════ -->
+<section class="page" id="page-cozinha">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Cozinha</h2>
+    <div class="adjectives" style="color:var(--amber)">Escura &middot; Encorpada &middot; Atel&#234; &middot; Integrada</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st amber">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--amber)">
+        Uma cozinha de chef amador &mdash; intensa, quente, com cheiro de especiaria.
+        Superf&#237;cies escuras e madeira quente convivendo com metal e cer&#226;mica.
+        Coisas boas expostas como numa galeria: panelas de ferro e cobre,
+        temperos em vidro, cer&#226;micas artesanais. N&#227;o quer parecer cozinha
+        profissional &mdash; quer parecer que algu&#233;m vive e cozinha aqui de verdade.
+        Integrada com a sala, mas com personalidade pr&#243;pria.
+      </p>
+      <div class="st verde">O Que Fica (N&#227;o Mudar)</div>
+      <ul class="brief verde">
+        <li>Arm&#225;rios inferiores: cinza escuro fosco &#10003;</li>
+        <li>Bancada: granito cinza &#10003;</li>
+        <li>Cooktop a g&#225;s &#10003;</li>
+        <li>Cobog&#243;s &mdash; sa&#237;da para &#225;rea de servi&#231;o: PRESERVAR</li>
+        <li>Piso hidr&#225;ulico floral &#225;rea de servi&#231;o: PRESERVAR</li>
+      </ul>
+      <div class="st amber">O Que Transforma</div>
+      <ul class="brief amber">
+        <li>Backsplash: azulejo 10&#215;10 terracota queimado</li>
+        <li>2 prateleiras abertas em madeira escura &mdash; comprimento total da bancada</li>
+        <li>Ilumina&#231;&#227;o: LED &#226;mbar sob prateleira inferior</li>
+        <li>Torneira: cobre / dourado</li>
+        <li>Arm&#225;rio alto em madeira escura &mdash; uma extremidade</li>
+        <li>Piso: porcelanato creme, padr&#227;o geom&#233;trico leve</li>
+        <li>Geladeira: retr&#244; em creme ou preta fosca</li>
+        <li>Lava-lou&#231;as: instalada corretamente e integrada</li>
+        <li>Lava e seca: &#225;rea de servi&#231;o planejada para ela</li>
+        <li>Exposi&#231;&#227;o: panelas ferro/cobre, cer&#226;micas, vidros</li>
+        <li>Gest&#227;o de cabos da cozinha planejada</li>
+      </ul>
+      <div class="st bordo">Quest&#245;es para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Integra&#231;&#227;o cozinha/sala: janela, passa-prato ou abertura?</li>
+        <li>Porta &#225;rea de servi&#231;o: v&#227;o existente ou nova abertura?</li>
+        <li>Exaustor/coifa: posi&#231;&#227;o e tipo &mdash; integrar ou valorizar?</li>
+        <li>Mix exposi&#231;&#227;o &#215; escondido: eletrodom&#233;sticos pequenos</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo" style="font-size:10px">IMG_8640 &mdash; &#193;rea de servi&#231;o<br>azulejo original + tanque</div>
+      <div class="photo" style="font-size:10px">IMG_8643 &mdash; Cobog&#243;s<br>sa&#237;da cozinha / &#225;rea de servi&#231;o</div>
+      <div class="photo">IMG_8642 &mdash; Cozinha</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspira&#231;&#245;es &middot; Refer&#234;ncias Visuais</div>
+  <div class="filmstrip" id="film-cozinha">
+    <div class="filmstrip-slot">cozinha 01</div><div class="filmstrip-slot">cozinha 02</div>
+    <div class="filmstrip-slot">cozinha 03</div><div class="filmstrip-slot">cozinha 04</div>
+    <div class="filmstrip-slot">cozinha 05</div><div class="filmstrip-slot">cozinha 06</div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Cozinha</span><span>5 / 8</span></div>
+</section>
+
+<!-- ══════════════════════ PAGE 6 — BANHEIROS ══════════════════════ -->
+<section class="page" id="page-banheiros">
+  <div class="page-header" style="border-top:4px solid var(--bordo)">
+    <h2>Banheiros</h2>
+    <div class="adjectives" style="color:var(--bordo)">Social: elegante &middot; mid-century &middot; Lavabo: imersivo &middot; dram&#225;tico</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st bordo">Banheiro Social</div>
+      <p class="vision" style="border-color:var(--bordo)">
+        Eleg&#226;ncia com personalidade &mdash; n&#227;o quer ser neutro.
+        Contraste marcante entre o azulejo original (preservado) e
+        o bord&#244; vibrante do box. O DNA do pr&#233;dio est&#225; no azulejo:
+        geom&#233;trico-floral bege/dourado &mdash; esse fica, todo o resto dialoga com ele.
+      </p>
+      <div class="st bordo">Decis&#245;es Confirmadas</div>
+      <ul class="brief bordo">
+        <li>Azulejo geom&#233;trico-floral bege/dourado original: PRESERVAR</li>
+        <li>Box: azulejo bordeaux/vinho brilhante &mdash; do ch&#227;o ao teto</li>
+        <li>Arm&#225;rio: flutuante walnut horizontal</li>
+        <li>Tampo: m&#225;rmore claro, cuba embutida</li>
+        <li>Espelho: horizontal, moldura fina escura</li>
+        <li>Metais: dourado / bronze</li>
+        <li>Ilumina&#231;&#227;o: arandela dourada na parede + spots</li>
+        <li>Piso: a definir com a arquiteta</li>
+      </ul>
+      <div class="st bordo">Quest&#245;es para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Piso do banheiro social: proposta da arquiteta bem-vinda</li>
+        <li>Box: cortina ou porta? Tipo de fechamento?</li>
+        <li>Propor&#231;&#227;o arm&#225;rio horizontal &#215; espa&#231;o dispon&#237;vel</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Lavabo (~90 &#215; 150 cm)</div>
+      <p class="vision" style="border-color:var(--mid);font-size:13px">
+        Um lavabo que choca &mdash; positivamente.
+        Cimento queimado total, pia bebedouro de antiq&#250;ario,
+        espelho elaborado. A visita que entrar vai comentar.
+        Volume pequeno, impacto enorme.
+      </p>
+      <div class="st mid">O Que Queremos</div>
+      <ul class="brief mid">
+        <li>Cimento queimado do ch&#227;o ao teto (total)</li>
+        <li>Pia lou&#231;a estilo bebedouro antigo</li>
+        <li>Torneira bica antiga</li>
+        <li>Espelho moldura elaborada / antigada</li>
+        <li>Basculante: luz natural m&#237;nima</li>
+      </ul>
+      <div class="st bordo">Pend&#234;ncias</div>
+      <ul class="brief bordo">
+        <li>Pia + torneira: a garimpar em antiq&#250;ario</li>
+        <li>Espelho: a garimpar em antiq&#250;ario</li>
+        <li>Volume apertado: como trabalhar?</li>
+      </ul>
+      <div class="st mid" style="margin-top:16px">Estado Atual</div>
+      <div class="photo" style="margin-top:8px">Sem registro fotogr&#225;fico<br>dispon&#237;vel para esta &#225;rea</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspira&#231;&#245;es &middot; Refer&#234;ncias Visuais</div>
+  <div class="filmstrip" id="film-banheiros">
+    <div class="filmstrip-slot">banheiro 01</div><div class="filmstrip-slot">banheiro 02</div>
+    <div class="filmstrip-slot">banheiro 03</div><div class="filmstrip-slot">banheiro 04</div>
+    <div class="filmstrip-slot">banheiro 05</div><div class="filmstrip-slot">banheiro 06</div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Banheiros</span><span>6 / 8</span></div>
+</section>
+
+<!-- ══════════════════ PAGE 7 — 2&#186; QUARTO / ESCRITÓRIO ══════════════════ -->
+<section class="page" id="page-escritorio">
+  <div class="page-header" style="border-top:4px solid var(--mid)">
+    <h2>Segundo Quarto / Escrit&#243;rio</h2>
+    <div class="adjectives" style="color:var(--mid)">Duplo uso &middot; H&#243;spedes &middot; Trabalho &middot; Funcional</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st mid">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--mid)">
+        Um quarto que funciona como escrit&#243;rio mas n&#227;o parece s&#243; escrit&#243;rio.
+        Quando tem h&#243;spede, funciona como quarto de verdade.
+        Quando estamos trabalhando, &#233; um espa&#231;o focado, organizado,
+        sem bagu&#231;a vis&#237;vel. A gest&#227;o de cabos e o lugar do modem/roteador
+        s&#227;o parte fundamental do projeto desse ambiente.
+      </p>
+      <div class="st mid">Necessidades Confirmadas</div>
+      <ul class="brief mid">
+        <li>Cama de h&#243;spedes (solteiro ou casal pequeno)</li>
+        <li>Mesa de trabalho com gest&#227;o de cabos planejada</li>
+        <li>Lugar designado para modem e roteador &mdash; escondido</li>
+        <li>Arm&#225;rio / roupeiro para h&#243;spede</li>
+        <li>Ilumina&#231;&#227;o de trabalho + ilumina&#231;&#227;o de dormir</li>
+        <li>Ambiente que n&#227;o pare&#231;a escrit&#243;rio quando usado como quarto</li>
+      </ul>
+      <div class="st verde">Elementos Originais a Preservar</div>
+      <ul class="brief verde">
+        <li><strong>Cobog&#243;s</strong> &mdash; sa&#237;da cozinha / entrada &#225;rea de servi&#231;o. PRESERVAR.</li>
+        <li><strong>Azulejo banheiro social</strong> &mdash; geom&#233;trico-floral bege e dourado. Ponto de partida visual.</li>
+        <li><strong>Piso hidr&#225;ulico floral</strong> &mdash; cozinha e &#225;rea de servi&#231;o. PRESERVAR e revelar.</li>
+        <li><strong>Taquinho de madeira</strong> &mdash; sob vin&#237;lico: sala, quartos, corredor. Condicionar ap&#243;s remo&#231;&#227;o.</li>
+      </ul>
+      <div class="st bordo">Quest&#245;es para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Cama: embutida, dobr&#225;vel ou convencional?</li>
+        <li>Mesa de trabalho: parede inteira ou s&#243; uma &#225;rea?</li>
+        <li>Isolamento ac&#250;stico do escrit&#243;rio &mdash; vale pensar?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st verde">Elementos Originais</div>
+      <div class="photo" style="font-size:10px">IMG_8643 &mdash; Cobog&#243;s originais<br>preservar</div>
+      <div class="photo" style="font-size:10px">IMG_8644 &mdash; Detalhe cobog&#243;s<br>sombras e luz</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspira&#231;&#245;es &middot; Refer&#234;ncias Visuais</div>
+  <div class="filmstrip" id="film-escritorio">
+    <div class="filmstrip-slot">escrit&#243;rio 01</div><div class="filmstrip-slot">escrit&#243;rio 02</div>
+    <div class="filmstrip-slot">escrit&#243;rio 03</div><div class="filmstrip-slot">escrit&#243;rio 04</div>
+    <div class="filmstrip-slot">escrit&#243;rio 05</div><div class="filmstrip-slot">escrit&#243;rio 06</div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>2&#186; Quarto &amp; Escrit&#243;rio</span><span>7 / 8</span></div>
+</section>
+
+<!-- ══════════════════ PAGE 8 — PRÓXIMOS PASSOS ══════════════════ -->
+<section class="page" id="page-proximos">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Perguntas &amp; Pr&#243;ximos Passos</h2>
+    <div class="adjectives" style="color:var(--amber)">D&#250;vidas abertas para esta primeira reuni&#227;o</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st amber">Perguntas para a Arquiteta</div>
+      <div class="qr"><span class="tag">Sala</span> Como resolver a rela&#231;&#227;o visual entrada / sala?</div>
+      <div class="qr"><span class="tag">Sala</span> Integra&#231;&#227;o cozinha/sala &mdash; abertura, janela ou passa-prato?</div>
+      <div class="qr"><span class="tag">Sala</span> Taquinho: estrat&#233;gia de revela&#231;&#227;o e acabamento?</div>
+      <div class="qr"><span class="tag">Sala</span> P&#233;-direito ~2,70m: ilumina&#231;&#227;o para ganhar altura visual?</div>
+      <div class="qr"><span class="tag">Quarto</span> Nicho embutido na cabeceira &mdash; vi&#225;vel sem obra pesada?</div>
+      <div class="qr"><span class="tag">Quarto</span> Melhor posi&#231;&#227;o para a penteadeira no layout?</div>
+      <div class="qr"><span class="tag">Quarto</span> Luz de leitura dos dois lados da cama?</div>
+      <div class="qr"><span class="tag">Cozinha</span> Coifa/exaustor: posi&#231;&#227;o ideal para o layout?</div>
+      <div class="qr"><span class="tag">Cozinha</span> Lava-lou&#231;as: integra&#231;&#227;o total ou semi-integrada?</div>
+      <div class="qr"><span class="tag">Banheiro</span> Qual piso dialoga com o azulejo original?</div>
+      <div class="qr"><span class="tag">Lavabo</span> Volume apertado: como trabalhar?</div>
+      <div class="qr"><span class="tag">Escrit&#243;rio</span> Cama embutida, dobr&#225;vel ou convencional?</div>
+      <div class="qr"><span class="tag">Geral</span> Cronograma: qual a sequ&#234;ncia l&#243;gica das obras?</div>
+    </div>
+    <div class="col-right">
+      <div class="st amber">Decis&#245;es de Design Pendentes</div>
+      <ul class="brief amber">
+        <li>Piso do banheiro social &mdash; definir com arquiteta</li>
+        <li>Integra&#231;&#227;o cozinha/sala &mdash; abertura ou janela</li>
+        <li>Cama segundo quarto: tipo e tamanho</li>
+        <li>Porta &#225;rea de servi&#231;o &mdash; v&#227;o existente ou nova abertura</li>
+        <li>Acesso ao lavabo &mdash; avaliar viabilidade + impacto</li>
+        <li>Organiza&#231;&#227;o &#225;rea de servi&#231;o (tanque + cobog&#243;s + lava e seca)</li>
+      </ul>
+      <div class="st mid">M&#243;veis e Pe&#231;as a Or&#231;ar</div>
+      <ul class="brief mid">
+        <li>Sof&#225; &#8805; 2m &mdash; verde-musgo/veludo (ref. Togo / Lutes)</li>
+        <li>Poltronas tubular cromado + couro (ref. Wassily)</li>
+        <li>Mesa de jantar 6+ lugares</li>
+        <li>Cama queen plataforma walnut &mdash; quarto casal</li>
+        <li>2&#215; criados-mudos nogueira c/ gavetas</li>
+        <li>Roupeiro 2m walnut &mdash; quarto casal</li>
+        <li>Penteadeira &mdash; integrada ao projeto</li>
+        <li>Sapateira + mesa de entrada &mdash; corredor</li>
+      </ul>
+      <div class="st amber">Pe&#231;as a Garimpar</div>
+      <ul class="brief amber">
+        <li>Pia lou&#231;a bebedouro antigo + torneira bica &mdash; lavabo</li>
+        <li>Espelho elaborado / antigado &mdash; lavabo</li>
+        <li>Espelho c&#244;ncavo / esf&#233;rico met&#225;lico grande &mdash; sala</li>
+        <li>Poltronas cromadas vintage &mdash; sala</li>
+      </ul>
+      <div class="signoff">
+        <strong>Bruno Trombin &amp; Raquel Ramos da Fonseca</strong>
+        <p>
+          Ed&#237;f&#237;cio Skorpius &mdash; Apto 303 &mdash; 3&#186; Pavimento &mdash; Porto Alegre<br>
+          brtrombin@gmail.com &middot; Mar&#231;o 2026
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing &mdash; Projeto Skorpius</span><span>Pr&#243;ximos Passos</span><span>8 / 8</span></div>
+</section>
+
+</main>
+</div>
+
+<script>
+const pages = ['capa','overview','sala','quarto','cozinha','banheiros','escritorio','proximos'];
+const stripeColors = {
+  capa:'#C15B35', overview:'#C49A28', sala:'#C15B35',
+  quarto:'#49583A', cozinha:'#C49A28', banheiros:'#7D2535',
+  escritorio:'#7A5C40', proximos:'#C49A28'
+};
+
+function go(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    n.style.borderLeftColor = 'transparent';
+  });
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (el) {
+    el.classList.add('active');
+    const dot = el.querySelector('.nav-dot');
+    if (dot) el.style.borderLeftColor = dot.style.background;
+  }
+  document.getElementById('stripe').style.background = stripeColors[id] || '#C15B35';
+  document.getElementById('main').scrollTop = 0;
+}
+
+document.addEventListener('keydown', e => {
+  const cur = document.querySelector('.page.active');
+  if (!cur) return;
+  const id = cur.id.replace('page-','');
+  const idx = pages.indexOf(id);
+  if (e.key === 'ArrowRight' && idx < pages.length-1) {
+    go(pages[idx+1], document.querySelector('[data-page="'+pages[idx+1]+'"]'));
+  }
+  if (e.key === 'ArrowLeft' && idx > 0) {
+    go(pages[idx-1], document.querySelector('[data-page="'+pages[idx-1]+'"]'));
+  }
+});
+
+// Init
+const first = document.querySelector('.nav-item.active');
+if (first) { const d=first.querySelector('.nav-dot'); if(d) first.style.borderLeftColor=d.style.background; }
+</script>
+</body>
+</html>

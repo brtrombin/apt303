@@ -1,0 +1,325 @@
+=======================================================
+PROJETO SKORPIUS — INFORMAÇÕES COMPLETAS
+Exportado em: março de 2026
+=======================================================
+
+-------------------------------------------------------
+1. DADOS DO IMÓVEL
+-------------------------------------------------------
+Endereço:        Rua Tenente Coronel Fabrício Pilar, 571/601 — Apto 303
+Bairro / Cidade: Mont Serrat, Porto Alegre / RS
+Edifício:        Edifício Skorpius
+Pavimento:       2º ou 3º pavimento
+Área privativa:  74 m²
+Área comum:      11 m²
+Área total:      85 m²
+Garagem:         Nº 9 — 16 m² privativos
+
+Matrícula (apto):    CNM 099226.2.0004799-40 (matrícula 4.799)
+Matrícula (garagem): CNM 099226.2.0004782-91 (matrícula 4.782)
+Registro de Imóveis: 1ª Zona de Porto Alegre
+Certidões negativas de ônus emitidas em: 13/02/2026
+
+Época de construção: 1975/1976
+Expediente Único:    002.253787.00.7
+Estrutura:           Concreto armado (confirmado pela Convenção do Condomínio, Art. 07b)
+Característica:      Cobogós nas áreas de serviço e circulação
+
+-------------------------------------------------------
+2. DADOS DO FINANCIAMENTO
+-------------------------------------------------------
+Contrato:           1.4444.2658612-6
+Proposta SIOPI:     0007.0445.0002447-2
+Sistema:            SAC / TR
+Prazo:              420 meses (abr/2026 a mar/2061)
+Agência responsável: 445 — Partenon, RS
+Vencimento:         Dia 12 de cada mês
+
+Condições para manutenção da taxa reduzida:
+- Débito automático em conta corrente Caixa
+- Chave PIX CPF cadastrada na Caixa
+- Cartão de crédito Caixa ativo
+
+-------------------------------------------------------
+3. PROPRIETÁRIOS
+-------------------------------------------------------
+Bruno Trombin
+  CPF: 028.580.070-12
+
+Raquel Ramos da Fonseca
+  CPF: 005.815.090-05
+  Nascimento: 13/03/1997
+
+Regime de bens: Comunhão universal de bens (Lei 6.515/77)
+Pacto antenupcial: Nº 61.023-060 — 1º Tabelionato de Notas de Canoas/RS — 20/03/2025
+
+-------------------------------------------------------
+4. ASPECTOS JURÍDICOS E TÉCNICOS
+-------------------------------------------------------
+Contrato Caixa — Cláusula 12.1:
+  Proibida obra de MODIFICAÇÃO sem prévio consentimento expresso da Caixa.
+  Aplicável a qualquer obra de modificação, mesmo que não estrutural.
+
+Contrato Caixa — Cláusula 10.1.1c/d:
+  Proibição de abertura de paredes em alvenaria estrutural.
+  NÃO SE APLICA ao Skorpius — estrutura é de concreto armado.
+
+Convenção do Condomínio:
+  Registrada em 1982, Livro 3 - Registro Auxiliar nº 1979, 1ª Zona POA.
+  Paredes internas à unidade NÃO exigem aprovação da assembleia.
+  Restrição se aplica apenas a paredes entre unidades vizinhas.
+
+Abertura de janela/passa-prato entre cozinha e sala:
+  Exige autorização formal da Caixa (Cláusula 12.1) + ART/RRT + protocolo agência 445.
+
+Expediente Único: 002.253787.00.7
+  Processo de solicitação de planta estabelecido.
+  Pendente: confirmar se contrato de financiamento basta para solicitar antes da transferência da matrícula.
+
+-------------------------------------------------------
+5. ELEMENTOS ORIGINAIS A PRESERVAR
+-------------------------------------------------------
+- Cobogós: elemento icônico dos anos 70, área de serviço e circulação. NÃO remover.
+- Azulejo do banheiro: padrão geométrico bege e dourado, mid-century. NÃO trocar.
+- Piso hidráulico com padrão floral na cozinha e área de serviço.
+- Taquinho de madeira escura sob o piso vinílico da sala e quartos — a revelar.
+
+-------------------------------------------------------
+6. CONCEITO GERAL DO PROJETO
+-------------------------------------------------------
+Foco: como cada ambiente deve fazer SENTIR — não em rótulos ou categorias de estilo.
+A arquitetura anos 70 do prédio é inspiração de fundo, não um estilo a seguir.
+
+Estética geral: blend de Japandi/Boêmio + modernismo dos anos 70.
+Elementos recorrentes: plantas, arte, cerâmicas, livros expostos, tapetes, luminárias com personalidade.
+
+PALETA BASE:
+  Paredes:          Creme/off-white quente
+  Acento quente:    Terracota suave (meia parede da sala)
+  Tapete:           Escuro como âncora
+  Mobiliário:       Madeira nogueira/walnut escura, couro escuro
+  Detalhes de cor:  Verde-musgo, turquesa — objetos, cerâmicas, almofadas
+  Metais:           Cobre, dourado, cromado (mais presente que nível de sotaque)
+  Piso:             Taquinho escuro original (a revelar)
+  Iluminação:       Âmbar quente
+
+MATERIAIS-CHAVE:
+  - Madeira escura (nogueira/walnut): móveis, estante, prateleiras
+  - Rattan e fibras naturais: poltrona, luminárias, cestos
+  - Linho e veludo: sofá, almofadas, cortinas
+  - Couro envelhecido: poltronas, detalhes
+  - Cobre/dourado/cromado: torneiras, puxadores, luminárias
+  - Cerâmica artesanal: objetos decorativos
+
+REGRA FINANCEIRA:
+  Nunca exibir valores financeiros em apresentações ou materiais visuais,
+  a não ser que explicitamente solicitado.
+
+-------------------------------------------------------
+7. SALA DE ESTAR — DEFINIDA
+-------------------------------------------------------
+Adjetivos: Acolhedora, descontraída, para receber, com história, cheia de vida.
+
+MOBILIÁRIO E DECISÕES CONFIRMADAS:
+  Sofá principal:     Togo (estilo Ligne Roset, marca Estofados Lutes) — verde-musgo/veludo escuro — STATUS: a orçar
+  Poltronas:          Estrutura tubular cromada + assento couro escuro (ref. Wassily/Breuer) — STATUS: a explorar/orçar
+  Tapete:             Escuro, âncora do ambiente
+  Estante:            Biblioteca parede inteira (ref. apartamento 70s modernism)
+  Espelho:            Côncavo/esférico metálico grande — peça principal da sala
+  Luminária central:  Noguchi pendente (referência)
+  Luminária de chão:  Luz âmbar, linho ou rattan
+  Plantas:            Ficus lyrata e Monstera — grandes, em vaso cerâmico
+  Arte:               Quadros abstratos em tons terrosos
+
+  SEM TV na sala.
+  Meia parede em terracota suave.
+  Estante como parede focal — não painel de TV.
+  Verde-musgo como cor de referência de tecidos (sofá confirmado nessa cor).
+  Metal cromado como elemento mais presente na sala (não só sotaque).
+
+-------------------------------------------------------
+8. QUARTO CASAL — EM ANDAMENTO
+-------------------------------------------------------
+Dimensões: 2,85m × 4,40m
+Adjetivos: Sereno, japandi.
+
+CONFIGURAÇÃO DE PLANTA:
+  Parede direita: cabeceira da cama encostada, se estendendo em direção à janela
+  Parede de fundo (bottom): roupeiro
+  Parede esquerda: cômoda + espelho
+  Parede superior (topo): janela
+  Porta: parede esquerda, abre em direção à parede de fundo
+
+MOBILIÁRIO:
+  Cama:             Queen, plataforma baixa em walnut, cabeceira na parede direita — STATUS: a orçar
+  Criados-mudos:    2x nogueira escura com gavetas, um de cada lado — STATUS: a orçar
+  Roupeiro:         2m, walnut escuro, parede de fundo — STATUS: a orçar
+  Cômoda:           Walnut escuro, ~90cm, parede esquerda — STATUS: a orçar
+  Espelho:          Retangular grande 1,70m × 1,10m, moldura fina metal escuro, apoiado ao lado da cômoda — STATUS: a orçar
+  Escada decorativa: Peça existente a incorporar, encostada na parede da janela — STATUS: já tem
+
+PISO:
+  Taquinho escuro herringbone (existente sob vinílico).
+  Condição real só confirmada após remoção do vinílico.
+  Necessita lixamento e envernizamento.
+
+PAREDES:
+  Azul sereno (direção japandi).
+
+-------------------------------------------------------
+9. COZINHA — EM ANDAMENTO
+-------------------------------------------------------
+Adjetivos: Escura, encorpada, com personalidade, semi-aberta, ateliê.
+
+O QUE FICA:
+  Armários inferiores cinza escuro fosco
+  Bancada em granito cinza
+  Cooktop a gás
+
+O QUE TRANSFORMA:
+  Azulejo:          Faixa 10x10 terracota queimado acima da bancada até as prateleiras
+  Prateleiras:      Duas abertas em madeira escura, comprimento total da bancada
+  Iluminação:       Fita LED âmbar sob a prateleira inferior
+  Torneira:         Cobre/dourado
+  Armazenamento:    Armário alto fechado em madeira escura em uma extremidade
+  Piso:             Porcelanato creme claro com leve padrão geométrico
+  Geladeira:        Retrô em creme ou preta fosca
+  Exposição:        Panelas de ferro e cobre, temperos em vidro, cerâmicas decorativas (estilo ateliê)
+
+PENDÊNCIAS:
+  - Definir abertura para sala (janela/passa-prato ou integração total) → exige autorização Caixa
+  - Verificar porta para área de serviço — vão existente ou abertura nova
+  - Mix de utensílios escondidos e expostos
+
+-------------------------------------------------------
+10. BANHEIRO SOCIAL — DIREÇÃO APROVADA
+-------------------------------------------------------
+  Atrás da pia:     Azulejo estampado geométrico-floral brilhante bege/dourado (preserva DNA original)
+  Box:              Azulejo bordeaux/vinho brilhante, parede inteira
+  Armário:          Flutuante walnut, horizontal apenas (sem coluna lateral)
+  Tampo:            Mármore claro com cuba embutida
+  Espelho:          Horizontal, moldura fina escura
+  Metais:           Dourado/bronze
+  Iluminação:       Arandela dourada na parede + spots no teto
+  Piso:             Indefinido
+
+-------------------------------------------------------
+11. LAVABO (~90cm × 1,50m) — DIREÇÃO DEFINIDA
+-------------------------------------------------------
+Adjetivos: Imersivo, impressionante para visitas.
+
+  Revestimento:     Cimento queimado do chão ao teto (total)
+  Pia:              Louça estilo bebedouro antigo com torneira bica antiga — STATUS: a garimpar em antiquário
+  Espelho:          Moldura elaborada/antigada — STATUS: a garimpar em antiquário
+  Janela:           Basculante, luz natural mínima
+
+-------------------------------------------------------
+12. HALL/CORREDOR — REFERÊNCIA INICIAL
+-------------------------------------------------------
+  Tapete escuro como âncora (referência: apartamento 70s modernism)
+  Verde-musgo/veludo escuro como referência de cor para tecidos/estofados
+
+-------------------------------------------------------
+13. CÔMODOS A DESENVOLVER
+-------------------------------------------------------
+  Quarto 2 / home office: doubles como escritório para Bruno e Raquel simultaneamente
+    Mesa preta industrial/metal existente (1,6m) a incorporar — STATUS: já tem
+    Design ainda não desenvolvido.
+
+  Área de serviço:   Preservar cobogós e piso hidráulico. Estudo de reorganização do tanque em aberto.
+  Criação de acesso ao lavabo: flagrada como modificação de alto impacto — thread aberto.
+
+-------------------------------------------------------
+14. INVENTÁRIO DE MÓVEIS E PEÇAS (STATUS)
+-------------------------------------------------------
+STATUS: A ORÇAR
+  - Sofá Togo (Estofados Lutes) — verde-musgo/veludo escuro — sala
+  - Poltronas tubular cromado + couro escuro (ref. Wassily/Breuer) — sala
+  - Cama queen plataforma walnut — quarto casal
+  - 2x criado-mudo nogueira escura c/ gavetas — quarto casal
+  - Roupeiro 2m walnut escuro — quarto casal
+  - Cômoda walnut escuro ~90cm — quarto casal
+  - Espelho retangular 1,70m × 1,10m moldura metal escura — quarto casal
+
+STATUS: JÁ TEM
+  - Escada decorativa (incorporar ao quarto casal)
+  - Mesa preta industrial 1,6m (incorporar ao home office/quarto 2)
+
+STATUS: A GARIMPAR EM ANTIQUÁRIO
+  - Pia louça estilo bebedouro antigo + torneira bica antiga — lavabo
+  - Espelho moldura elaborada/antigada — lavabo
+
+-------------------------------------------------------
+15. PRÓXIMOS PASSOS
+-------------------------------------------------------
+ANTES DE QUALQUER OBRA:
+  [ ] Obter consentimento expresso da Caixa (Cláusula 12.1) antes de qualquer modificação
+  [ ] Obter planta via Expediente Único (002.253787.00.7)
+  [ ] Confirmar condição do taquinho no quarto casal após remoção do vinílico
+  [ ] Visita técnica de engenheiro/arquiteto
+
+DESIGN:
+  [ ] Garimpar pia bebedouro + espelho elaborado para o lavabo em antiquários
+  [ ] Orçar sofá Togo na Estofados Lutes
+  [ ] Explorar/orçar poltronas Wassily/Breuer cromadas
+  [ ] Definir piso do banheiro social
+  [ ] Desenvolver quarto 2 / home office
+  [ ] Explorar reorganização da área de serviço (tanque)
+  [ ] Avaliar viabilidade de criar acesso ao lavabo
+
+-------------------------------------------------------
+16. MEMÓRIAS SALVAS (memory_user_edits)
+-------------------------------------------------------
+1. Bedroom project: Japandi style, serene blue walls, dark herringbone taquinho floor.
+   Queen bed (low walnut, headboard right wall). Wardrobe 2m on bottom wall.
+   Dresser+mirror on left wall. Ladder rack on window wall.
+   Room 2.85x4.40m. Door left wall opens toward bottom. Window top wall.
+
+2. Projeto Skorpius: nunca exibir valores financeiros (financiamento, parcelas, taxas,
+   valor do imóvel) em apresentações ou materiais visuais, a não ser que explicitamente solicitado.
+
+3. Contrato Caixa nº 1.4444.2658612-6. Cláusula 12.1: proibida obra de modificação sem prévio
+   consentimento expresso da Caixa. Cláusula 10.1.1c/d: proibição de abertura de paredes se
+   alvenaria estrutural — confirmado NÃO se aplica ao Skorpius (concreto armado).
+
+4. Edifício Skorpius: estrutura de concreto armado confirmada pela Convenção do Condomínio
+   (Art. 07b). Convenção registrada em 1982, Livro 3 Registro Auxiliar nº 1979, 1ª Zona POA.
+   Paredes internas à unidade não exigem aprovação da assembleia (só paredes entre unidades vizinhas).
+
+5. Matrículas do Skorpius: Apartamento 303 = matrícula 4.799 (CNM 099226.2.0004799-40).
+   Box garagem nº 9 = matrícula 4.782 (CNM 099226.2.0004782-91).
+   Ambas na 1ª Zona de Porto Alegre. Certidões negativas de ônus emitidas em 13/02/2026.
+
+6. REGRA PROJETO SKORPIUS: Sempre que Bruno mencionar uma peça específica de mobiliário ou
+   decoração para o apartamento, salvar imediatamente em memória com: nome da peça, ambiente,
+   especificações discutidas, e status (a comprar / a orçar / já tem).
+   Objetivo: mapear custo total de mobiliário separado da obra.
+
+7. Projeto Skorpius – Referência geral (apartamento 70s modernism): Paleta base da referência:
+   madeira escura + couro escuro + metal cromado, mesclada com a paleta já planejada (terracota/creme).
+   Metal cromado como elemento mais presente (não só sotaque). Iluminação âmbar quente
+   como referência adicional (mais sutil que na referência original).
+
+8. Projeto Skorpius – Sala de estar: Estante-biblioteca de parede inteira.
+   Tapete escuro como âncora da sala. Espelho côncavo/esférico metálico grande como peça principal.
+   Poltronas com estrutura tubular cromada e assento em couro escuro (ref. Wassily/Breuer) — a explorar/orçar.
+
+9. Projeto Skorpius – Hall/corredor: Tapete escuro como âncora.
+   Cor verde-musgo/veludo escuro como referência de cor para tecidos/estofados
+   (não necessariamente o sofá).
+
+10. Projeto Skorpius – Sala de estar: Sofá principal = Togo (estilo Ligne Roset, marca Estofados Lutes).
+    Cor: verde-musgo/veludo escuro. Atrativo principal: conforto e baixura. Status: a orçar.
+
+11. Projeto Skorpius – Banheiro social (direção aprovada): azulejo estampado bege/dourado atrás da pia;
+    box bordô brilhante parede inteira; armário flutuante walnut sem coluna lateral;
+    tampo mármore claro cuba embutida; espelho horizontal moldura escura; metais dourados/bronze;
+    arandela dourada + spots; piso indefinido.
+
+12. Projeto Skorpius – Lavabo: pia de louça estilo bebedouro antigo com torneira de bica antiga
+    (a garimpar em antiquário). Espelho de moldura elaborada/antigada.
+    Ambiente pensado para chamar atenção das visitas. Status: a garimpar.
+
+=======================================================
+FIM DO DOCUMENTO
+=======================================================
