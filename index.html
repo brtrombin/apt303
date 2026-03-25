@@ -3,460 +3,1192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apt 303 — Moodboard</title>
+<title>Apt 303 — Projeto Skorpius</title>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --dark: #1A1510;
-    --walnut: #3A2518;
-    --terracotta: #C15B35;
-    --burgundy: #7D2535;
-    --green: #49583A;
-    --amber: #C49A28;
-    --cream: #F4EFE4;
-    --cream-dark: #E8E0D0;
+    --dark:#1A1510; --walnut:#3A2518; --terra:#C15B35; --bordo:#7D2535;
+    --verde:#49583A; --amber:#C49A28; --creme:#F4EFE4; --creme-d:#BFB8AA;
+    --mid:#7A5C40; --rule:#2E2318;
+  }
+  html, body { height:100%; background:#0e0b08; font-family:'Georgia',serif; color:var(--creme); }
+  #shell { display:flex; height:100vh; overflow:hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width:200px; min-width:200px; background:var(--rule);
+    display:flex; flex-direction:column; padding:24px 0;
+    border-right:1px solid #1a120a; overflow-y:auto; flex-shrink:0;
+  }
+  #sidebar h1 {
+    font-size:10px; letter-spacing:.18em; color:var(--amber);
+    padding:0 20px 20px; border-bottom:1px solid var(--walnut);
+    text-transform:uppercase; font-family:'Helvetica Neue',sans-serif; font-weight:700;
+  }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:11px 20px;
+    cursor:pointer; font-family:'Helvetica Neue',sans-serif; font-size:11px;
+    color:var(--creme-d); border-left:3px solid transparent; transition:all .15s; user-select:none;
+  }
+  .nav-item:hover { background:rgba(255,255,255,.04); color:var(--creme); }
+  .nav-item.active { color:var(--creme); background:rgba(255,255,255,.06); }
+  .nav-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .nav-sep {
+    height:1px; background:var(--walnut); margin:8px 20px;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* MAIN */
+  #main { flex:1; overflow-y:auto; position:relative; }
 
-  body {
-    background: var(--cream);
-    color: var(--dark);
-    font-family: 'Georgia', serif;
-  }
-
-  /* PALETTE BAR */
-  .palette-bar {
-    display: flex;
-    height: 6px;
-  }
-  .palette-bar span {
-    flex: 1;
+  /* LEFT ACCENT STRIPE */
+  .stripe {
+    position:fixed; left:200px; top:0; width:5px; height:100vh;
+    background:var(--terra); z-index:10; pointer-events:none;
+    transition:background .2s;
   }
 
-  /* HEADER */
-  header {
-    background: var(--dark);
-    color: var(--cream);
-    padding: 2rem 2rem 1.5rem;
+  /* PAGE */
+  .page { display:none; min-height:100vh; background:var(--dark); position:relative; }
+  .page.active { display:block; }
+
+  /* PAGE HEADER */
+  .page-header {
+    background:var(--rule); padding:22px 48px 18px;
+    border-bottom:1px solid #1a120a;
   }
-  header h1 {
-    font-size: 1.8rem;
-    font-weight: normal;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+  .page-header h2 {
+    font-family:'Helvetica Neue',sans-serif; font-size:26px; font-weight:800;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--creme);
   }
-  header p {
-    margin-top: 0.4rem;
-    font-size: 0.85rem;
-    color: var(--amber);
-    letter-spacing: 0.08em;
+  .adjectives {
+    margin-top:6px; font-family:'Helvetica Neue',sans-serif; font-size:11px;
+    font-weight:700; letter-spacing:.12em;
   }
 
-  /* FILTERS */
-  .filters {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--walnut);
-    padding: 0.8rem 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .filters button {
-    background: transparent;
-    border: 1px solid rgba(244,239,228,0.3);
-    color: var(--cream);
-    padding: 0.4rem 1rem;
-    border-radius: 2rem;
-    cursor: pointer;
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .filters button:hover {
-    background: rgba(244,239,228,0.15);
-  }
-  .filters button.active {
-    background: var(--terracotta);
-    border-color: var(--terracotta);
-    color: white;
-  }
-  .filters button[data-filter="sala"].active    { background: var(--walnut); border-color: var(--walnut); }
-  .filters button[data-filter="quarto"].active  { background: var(--burgundy); border-color: var(--burgundy); }
-  .filters button[data-filter="cozinha"].active { background: var(--amber); border-color: var(--amber); color: var(--dark); }
-  .filters button[data-filter="banheiro"].active{ background: var(--green); border-color: var(--green); }
-  .filters button[data-filter="escritorio"].active { background: var(--terracotta); border-color: var(--terracotta); }
-  .filters button[data-filter="antes"].active   { background: var(--dark); border-color: var(--cream); }
+  /* TWO COLUMNS */
+  .columns { display:grid; grid-template-columns:1fr 300px; }
+  .col-left  { padding:28px 28px 28px 48px; }
+  .col-right { padding:28px 24px; border-left:1px solid var(--walnut); background:rgba(0,0,0,.12); }
 
-  /* COUNT */
-  .count {
-    margin-left: auto;
-    color: rgba(244,239,228,0.5);
-    font-size: 0.75rem;
-    align-self: center;
-    white-space: nowrap;
+  /* SECTION TITLE */
+  .st {
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--terra);
+    border-bottom:1px solid var(--terra); padding-bottom:4px;
+    margin-bottom:12px; margin-top:22px;
+  }
+  .st:first-child { margin-top:0; }
+  .st.verde  { color:var(--verde);  border-color:var(--verde); }
+  .st.amber  { color:var(--amber);  border-color:var(--amber); }
+  .st.bordo  { color:var(--bordo);  border-color:var(--bordo); }
+  .st.mid    { color:var(--mid);    border-color:var(--mid); }
+
+  /* VISION */
+  .vision {
+    font-size:14px; line-height:1.8; color:var(--creme-d); font-style:italic;
+    border-left:3px solid var(--terra); padding-left:16px; margin-bottom:4px;
   }
 
-  /* MASONRY GRID */
-  .grid {
-    padding: 1.5rem;
-    columns: 4;
-    column-gap: 0.8rem;
+  /* BULLETS */
+  ul.brief { list-style:none; padding:0; margin:0; }
+  ul.brief li {
+    font-family:'Helvetica Neue',sans-serif; font-size:12.5px; color:var(--creme);
+    padding:5px 0 5px 18px; position:relative; line-height:1.5;
+    border-bottom:1px solid rgba(255,255,255,.04);
   }
-  @media (max-width: 1200px) { .grid { columns: 3; } }
-  @media (max-width: 800px)  { .grid { columns: 2; } }
-  @media (max-width: 480px)  { .grid { columns: 1; } }
+  ul.brief li::before {
+    content:''; position:absolute; left:4px; top:12px;
+    width:6px; height:6px; border-radius:50%; background:var(--terra);
+  }
+  ul.brief.verde li::before { background:var(--verde); }
+  ul.brief.amber li::before { background:var(--amber); }
+  ul.brief.bordo li::before { background:var(--bordo); }
+  ul.brief.mid li::before   { background:var(--mid); }
 
-  .card {
-    break-inside: avoid;
-    margin-bottom: 0.8rem;
-    border-radius: 4px;
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-    transition: opacity 0.3s, transform 0.3s;
+  /* TAG */
+  .tag {
+    display:inline-block; background:var(--walnut); color:var(--terra);
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.08em; padding:2px 8px; border-radius:3px; vertical-align:middle;
+    margin-right:6px; text-transform:uppercase;
   }
-  .card.hidden {
-    display: none;
+
+  /* DATA TABLE */
+  .dt { width:100%; }
+  .dt td { font-family:'Helvetica Neue',sans-serif; font-size:12px; padding:5px 0; vertical-align:top; border-bottom:1px solid rgba(255,255,255,.04); }
+  .dt td:first-child { color:var(--amber); font-weight:700; width:40%; padding-right:10px; }
+
+  /* NÃO-NEGOCIÁVEIS */
+  .nna { display:grid; grid-template-columns:10px 1fr; gap:0 12px; align-items:start; padding:8px 0; border-bottom:1px solid var(--walnut); }
+  .nna-dot { width:8px; height:8px; border-radius:50%; background:var(--terra); margin-top:4px; }
+  .nna strong { display:block; font-family:'Helvetica Neue',sans-serif; font-size:12.5px; font-weight:700; color:var(--creme); }
+  .nna span   { font-family:'Helvetica Neue',sans-serif; font-size:11px; color:var(--creme-d); }
+
+  /* PILLS */
+  .pills { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .pill {
+    background:var(--walnut); color:var(--creme);
+    font-family:'Helvetica Neue',sans-serif; font-size:10px; font-weight:700;
+    letter-spacing:.1em; padding:4px 12px; border-radius:12px; text-transform:uppercase;
   }
-  .card img {
-    width: 100%;
-    display: block;
-    transition: transform 0.3s;
+
+  /* SWATCHES */
+  .swatches { display:flex; gap:6px; margin:8px 0; }
+  .swatch { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .sw { width:32px; height:20px; border-radius:3px; }
+  .sl { font-family:'Helvetica Neue',sans-serif; font-size:8px; color:var(--mid); }
+
+  /* QUESTION ROW */
+  .qr {
+    display:flex; align-items:baseline; gap:10px; padding:7px 0;
+    border-bottom:1px solid rgba(255,255,255,.04);
+    font-family:'Helvetica Neue',sans-serif; font-size:12.5px; color:var(--creme);
   }
-  .card:hover img {
-    transform: scale(1.03);
+
+  /* SIGNOFF */
+  .signoff { background:var(--walnut); border-radius:6px; padding:18px 24px; margin-top:24px; }
+  .signoff strong { display:block; color:var(--terra); font-family:'Helvetica Neue',sans-serif; font-size:13px; margin-bottom:4px; }
+  .signoff p { color:var(--creme-d); font-family:'Helvetica Neue',sans-serif; font-size:11px; line-height:1.7; }
+
+  /* PHOTO — actual images on right col */
+  .photo-img {
+    border-radius:4px; overflow:hidden; margin-bottom:8px; cursor:pointer;
   }
-  .card .tag {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0.5rem;
-    background: rgba(26,21,16,0.7);
-    color: var(--cream);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
-    border-radius: 2rem;
-    opacity: 0;
-    transition: opacity 0.2s;
+  .photo-img img { width:100%; display:block; transition:transform .3s; }
+  .photo-img:hover img { transform:scale(1.03); }
+  .photo-label {
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; color:var(--mid);
+    letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px;
   }
-  .card:hover .tag {
-    opacity: 1;
+
+  /* FILMSTRIP */
+  .filmstrip-label {
+    background:var(--rule); padding:5px 16px;
+    font-family:'Helvetica Neue',sans-serif; font-size:8px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--mid); text-align:center;
+    border-top:2px solid #1a120a;
   }
+  .filmstrip {
+    display:flex; gap:3px; overflow-x:auto; scroll-snap-type:x mandatory;
+    background:var(--rule); padding:3px;
+  }
+  .filmstrip::-webkit-scrollbar { height:4px; }
+  .filmstrip::-webkit-scrollbar-track { background:var(--dark); }
+  .filmstrip::-webkit-scrollbar-thumb { background:var(--walnut); border-radius:2px; }
+  .filmstrip-slot {
+    flex:0 0 180px; height:130px; scroll-snap-align:start;
+    overflow:hidden; cursor:pointer;
+  }
+  .filmstrip-slot img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s; }
+  .filmstrip-slot:hover img { transform:scale(1.07); }
+
+  /* PAGE FOOTER */
+  .pfoot {
+    background:var(--rule); padding:8px 48px; display:flex;
+    justify-content:space-between; align-items:center; border-top:1px solid #1a120a;
+  }
+  .pfoot span { font-family:'Helvetica Neue',sans-serif; font-size:9px; color:var(--mid); letter-spacing:.1em; text-transform:uppercase; }
+
+  /* CAPA */
+  .capa-grid { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - 40px); }
+  .capa-left { padding:48px; display:flex; flex-direction:column; }
+  .capa-right {
+    background:var(--rule);
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px),
+      repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .capa-right img { width:100%; height:100%; object-fit:cover; opacity:.6; }
+  .capa-right-inner { color:var(--mid); font-family:'Helvetica Neue',sans-serif; font-size:11px; text-align:center; padding:20px; }
+  .ct { font-family:'Helvetica Neue',sans-serif; font-weight:900; font-size:52px; letter-spacing:.04em; color:var(--creme); line-height:1; margin-bottom:4px; }
+  .cs { font-family:'Helvetica Neue',sans-serif; font-weight:700; font-size:28px; color:var(--terra); letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px; }
+  .cr { width:80px; height:3px; background:var(--terra); margin-bottom:20px; }
+  .ci { font-family:'Helvetica Neue',sans-serif; font-size:13px; color:var(--creme-d); line-height:1.8; margin-bottom:28px; }
+
+  /* MOODBOARD & ANTES — masonry grid */
+  .grid-filters {
+    background:var(--walnut); padding:0.8rem 1.5rem; display:flex;
+    flex-wrap:wrap; gap:0.5rem; border-bottom:1px solid #1a120a;
+    align-items:center;
+  }
+  .grid-filters button {
+    background:transparent; border:1px solid rgba(244,239,228,.3);
+    color:var(--creme); padding:.35rem .9rem; border-radius:2rem;
+    cursor:pointer; font-size:.75rem; letter-spacing:.06em;
+    text-transform:uppercase; font-family:'Helvetica Neue',sans-serif;
+    transition:all .2s;
+  }
+  .grid-filters button:hover { background:rgba(244,239,228,.15); }
+  .grid-filters button.active { background:var(--terra); border-color:var(--terra); color:white; }
+  .grid-count { margin-left:auto; color:rgba(244,239,228,.45); font-size:.72rem; font-family:'Helvetica Neue',sans-serif; white-space:nowrap; }
+
+  .masonry {
+    padding:1rem 1.2rem; columns:4; column-gap:.7rem;
+  }
+  @media(max-width:1100px){ .masonry { columns:3; } }
+  @media(max-width:750px) { .masonry { columns:2; } }
+  @media(max-width:480px) { .masonry { columns:1; } }
+
+  .m-card {
+    break-inside:avoid; margin-bottom:.7rem; border-radius:3px;
+    overflow:hidden; cursor:pointer; position:relative;
+  }
+  .m-card.hidden { display:none; }
+  .m-card img { width:100%; display:block; transition:transform .3s; }
+  .m-card:hover img { transform:scale(1.04); }
+  .m-card .m-tag {
+    position:absolute; bottom:.4rem; left:.4rem;
+    background:rgba(26,21,16,.75); color:var(--creme);
+    font-size:.6rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:.15rem .45rem; border-radius:2rem;
+    opacity:0; transition:opacity .2s;
+    font-family:'Helvetica Neue',sans-serif;
+  }
+  .m-card:hover .m-tag { opacity:1; }
 
   /* LIGHTBOX */
   .lightbox {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(26,21,16,0.95);
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(14,11,8,.96); align-items:center; justify-content:center; padding:1rem;
   }
-  .lightbox.open {
-    display: flex;
-  }
-  .lightbox img {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 4px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  }
-  .lightbox-close {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    color: var(--cream);
-    font-size: 2rem;
-    cursor: pointer;
-    line-height: 1;
-    opacity: 0.7;
-    background: none;
-    border: none;
-  }
-  .lightbox-close:hover { opacity: 1; }
-
-  .lightbox-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--cream);
-    font-size: 2rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    opacity: 0.6;
-    padding: 1rem;
-  }
-  .lightbox-nav:hover { opacity: 1; }
-  .lightbox-prev { left: 0.5rem; }
-  .lightbox-next { right: 0.5rem; }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: var(--walnut);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    border-top: 1px solid var(--cream-dark);
-    margin-top: 1rem;
-  }
+  .lightbox.open { display:flex; }
+  .lightbox img { max-width:90vw; max-height:90vh; object-fit:contain; border-radius:3px; box-shadow:0 8px 40px rgba(0,0,0,.7); }
+  .lb-close { position:absolute; top:1rem; right:1.5rem; color:var(--creme); font-size:2rem; cursor:pointer; background:none; border:none; opacity:.7; }
+  .lb-close:hover { opacity:1; }
+  .lb-nav { position:absolute; top:50%; transform:translateY(-50%); color:var(--creme); font-size:2.5rem; cursor:pointer; background:none; border:none; opacity:.5; padding:.5rem 1rem; }
+  .lb-nav:hover { opacity:1; }
+  .lb-prev { left:0; }
+  .lb-next { right:0; }
 </style>
 </head>
 <body>
+<div id="shell">
 
-<div class="palette-bar">
-  <span style="background:var(--dark)"></span>
-  <span style="background:var(--walnut)"></span>
-  <span style="background:var(--terracotta)"></span>
-  <span style="background:var(--burgundy)"></span>
-  <span style="background:var(--green)"></span>
-  <span style="background:var(--amber)"></span>
-  <span style="background:var(--cream-dark)"></span>
-</div>
+<div class="stripe" id="stripe"></div>
 
-<header>
-  <h1>Apt 303 — Moodboard</h1>
-  <p>Edifício Skorpius &nbsp;·&nbsp; Reforma &amp; Conceito</p>
-</header>
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <h1>Projeto Skorpius</h1>
+  <div class="nav-item active" data-page="capa" onclick="go('capa',this)">
+    <span class="nav-dot" style="background:#C15B35"></span> Capa
+  </div>
+  <div class="nav-item" data-page="overview" onclick="go('overview',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Visão Geral
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-item" data-page="moodboard" onclick="go('moodboard',this)">
+    <span class="nav-dot" style="background:#C15B35"></span> Moodboard
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-item" data-page="sala" onclick="go('sala',this)">
+    <span class="nav-dot" style="background:#C15B35"></span> Sala de Estar
+  </div>
+  <div class="nav-item" data-page="quarto" onclick="go('quarto',this)">
+    <span class="nav-dot" style="background:#49583A"></span> Quarto Casal
+  </div>
+  <div class="nav-item" data-page="cozinha" onclick="go('cozinha',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Cozinha
+  </div>
+  <div class="nav-item" data-page="banheiro" onclick="go('banheiro',this)">
+    <span class="nav-dot" style="background:#7D2535"></span> Banheiro Social
+  </div>
+  <div class="nav-item" data-page="lavabo" onclick="go('lavabo',this)">
+    <span class="nav-dot" style="background:#7A5C40"></span> Lavabo
+  </div>
+  <div class="nav-item" data-page="escritorio" onclick="go('escritorio',this)">
+    <span class="nav-dot" style="background:#7A5C40"></span> Escritório
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-item" data-page="antes" onclick="go('antes',this)">
+    <span class="nav-dot" style="background:#BFB8AA"></span> Antes
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-item" data-page="proximos" onclick="go('proximos',this)">
+    <span class="nav-dot" style="background:#C49A28"></span> Próximos Passos
+  </div>
+</nav>
 
-<div class="filters">
-  <button class="active" data-filter="all">Todos</button>
-  <button data-filter="sala">Sala</button>
-  <button data-filter="quarto">Quarto</button>
-  <button data-filter="cozinha">Cozinha</button>
-  <button data-filter="banheiro">Banheiro</button>
-  <button data-filter="escritorio">Escritório</button>
-  <button data-filter="antes">Antes</button>
-  <span class="count" id="count"></span>
-</div>
+<main id="main">
 
-<div class="grid" id="grid">
+<!-- ════════════════════════════ CAPA ════════════════════════════ -->
+<section class="page active" id="page-capa">
+  <div class="capa-grid">
+    <div class="capa-left">
+      <div class="ct">BRIEFING</div>
+      <div class="cs">Reforma</div>
+      <div class="cr"></div>
+      <div class="ci">
+        Edíficio Skorpius — Apto 303<br>
+        Rua Ten. Cel. Fabrício Pilar, 571 — Porto Alegre<br>
+        74 m² · Construção 1975/1976 · 3º Pavimento
+      </div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;margin-bottom:4px">Proprietários</div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:13px;color:var(--creme);margin-bottom:4px">Bruno Trombin &amp; Raquel Ramos da Fonseca</div>
+      <div style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:var(--mid)">Março de 2026</div>
+      <div style="margin-top:36px">
+        <div class="st">Estilo Base</div>
+        <div class="pills">
+          <span class="pill">70s Modernismo</span>
+          <span class="pill">Japandi</span>
+          <span class="pill">Mid-Century</span>
+          <span class="pill">Boêmio</span>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <div class="st amber">Paleta</div>
+        <div class="swatches">
+          <div class="swatch"><div class="sw" style="background:#1A1510"></div><div class="sl">#1A1510</div></div>
+          <div class="swatch"><div class="sw" style="background:#3A2518"></div><div class="sl">#3A2518</div></div>
+          <div class="swatch"><div class="sw" style="background:#C15B35"></div><div class="sl">#C15B35</div></div>
+          <div class="swatch"><div class="sw" style="background:#7D2535"></div><div class="sl">#7D2535</div></div>
+          <div class="swatch"><div class="sw" style="background:#49583A"></div><div class="sl">#49583A</div></div>
+          <div class="swatch"><div class="sw" style="background:#C49A28"></div><div class="sl">#C49A28</div></div>
+          <div class="swatch"><div class="sw" style="background:#F4EFE4"></div><div class="sl">#F4EFE4</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="capa-right">
+      <img src="IMG_8633.jpeg" alt="Apartamento" onerror="this.parentElement.innerHTML='<div class=capa-right-inner>Cobogós — padrão original<br>Edifício Skorpius · 1975/1976</div>'">
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Capa</span><span>github.com/brtrombin/apt303</span></div>
+</section>
 
-  <!-- SALA -->
-  <div class="card" data-category="sala"><img src="pin_sala_01.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_02.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_03.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_04.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_05.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_06.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_07.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_08.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_09.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_10.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_11.jpg" alt="Sala"><span class="tag">Sala</span></div>
-  <div class="card" data-category="sala"><img src="pin_sala_12.jpg" alt="Sala"><span class="tag">Sala</span></div>
+<!-- ════════════════════════════ VISÃO GERAL ════════════════════════════ -->
+<section class="page" id="page-overview">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Visão Geral do Projeto</h2>
+    <div class="adjectives" style="color:var(--amber)">Contexto · Conceito · Não-negociáveis</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st">Sobre o Imóvel</div>
+      <table class="dt">
+        <tr><td>Endereço</td><td>Rua Ten. Cel. Fabrício Pilar, 571 — Apto 303</td></tr>
+        <tr><td>Bairro</td><td>Mont Serrat, Porto Alegre / RS</td></tr>
+        <tr><td>Área privativa</td><td>74 m² (área total: 85 m²)</td></tr>
+        <tr><td>Edifício</td><td>Edifício Skorpius</td></tr>
+        <tr><td>Construção</td><td>1975 / 1976</td></tr>
+        <tr><td>Estrutura</td><td>Concreto armado</td></tr>
+        <tr><td>Pavimento</td><td>3º pavimento</td></tr>
+        <tr><td>Garagem</td><td>Vaga nº 9 — 16 m² privativos</td></tr>
+      </table>
+      <div class="st">Escopo da Reforma</div>
+      <ul class="brief">
+        <li>Reforma PARCIAL — manutenção da estrutura existente</li>
+        <li>Abertura cozinha/sala: em definição</li>
+        <li>Foco: estética, acabamentos, mobiliário e iluminação</li>
+        <li>Revelar taquinho sob vinílico (sala, quartos, corredor)</li>
+        <li>Integração visual entrada ↔ sala ↔ cozinha</li>
+      </ul>
+      <div class="st">Estilo &amp; Sensação por Ambiente</div>
+      <ul class="brief">
+        <li><strong>Social:</strong> 70s Modernismo — metal cromado, rattan, madeira escura</li>
+        <li><strong>Quarto casal:</strong> Japandi — serenidade, paleta fria, minimalismo</li>
+        <li><strong>Banheiro:</strong> Contraste marcante, DNA mid-century preservado</li>
+        <li><strong>Cozinha:</strong> Ateliê escuro, quente, personalidade própria, integrada</li>
+      </ul>
+      <div class="st bordo">O Que Não Queremos</div>
+      <ul class="brief bordo">
+        <li>Apartamento genérico, "decorado de loja"</li>
+        <li>TV como elemento central de qualquer ambiente</li>
+        <li>Branco puro, cores frias, ambiente hospitalar</li>
+        <li>Madeira clara ou estilo escandinavo neutro</li>
+        <li>Excesso de objetos sem propósito</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st" style="color:var(--terra);border-color:var(--terra)">Não Abrimos Mão</div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Janelas teladas</strong><span>todas as janelas do apartamento</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Máquina de lavar louça</strong><span>instalada corretamente, integrada ao projeto</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Lava e seca</strong><span>área de serviço planejada para ela</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Penteadeira</strong><span>no quarto casal — integrada ao projeto</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Sofá ≥ 2m</strong><span>com gatificação integrada à sala</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Mesa de jantar ≥ 6 lugares</strong><span>elemento principal da área social</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Estante de livros</strong><span>com poltrona confortável para leitura</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Cozinha integrada à sala</strong><span>sem isolamento entre cozinha e estar</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Casa não centrada na TV</strong><span>a TV não é o foco de nenhum ambiente</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Mesa de entrada</strong><span>com lugar designado para deixar itens ao chegar</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Sapateira na entrada</strong><span>planejada e integrada ao corredor</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Gestão de cabos</strong><span>escritório, cozinha e TV — tudo organizado</span></div></div>
+      <div class="nna"><div class="nna-dot"></div><div><strong>Modem e roteadores</strong><span>lugar planejado, escondido, sem fio à vista</span></div></div>
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Visão Geral</span><span></span></div>
+</section>
 
-  <!-- QUARTO -->
-  <div class="card" data-category="quarto"><img src="pin_quarto_01.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_02.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_03.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_04.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_05.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_06.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_07.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_08.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_09.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_10.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_11.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
-  <div class="card" data-category="quarto"><img src="pin_quarto_12.jpg" alt="Quarto"><span class="tag">Quarto</span></div>
+<!-- ════════════════════════════ MOODBOARD ════════════════════════════ -->
+<section class="page" id="page-moodboard">
+  <div class="page-header" style="border-top:4px solid var(--terra)">
+    <h2>Moodboard</h2>
+    <div class="adjectives" style="color:var(--terra)">Referências Visuais · Pinterest · Inspirações</div>
+  </div>
+  <div class="grid-filters">
+    <button class="active" data-mf="all">Todos</button>
+    <button data-mf="sala">Sala</button>
+    <button data-mf="quarto">Quarto</button>
+    <button data-mf="cozinha">Cozinha</button>
+    <button data-mf="banheiro">Banheiro</button>
+    <button data-mf="escritorio">Escritório</button>
+    <span class="grid-count" id="mood-count"></span>
+  </div>
+  <div class="masonry" id="mood-grid">
+    <div class="m-card" data-mc="sala"><img src="pin_sala_01.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_02.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_03.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_04.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_05.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_06.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_07.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_08.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_09.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_10.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_11.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="sala"><img src="pin_sala_12.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_01.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_02.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_03.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_04.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_05.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_06.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_07.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_08.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_09.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_10.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_11.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="quarto"><img src="pin_quarto_12.jpg" loading="lazy"><span class="m-tag">Quarto</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_01.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_02.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_03.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_04.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_05.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_06.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_07.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_08.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_09.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_10.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_11.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_12.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_13.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_14.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_15.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_16.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_17.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_18.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_19.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_20.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_21.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="cozinha"><img src="pin_cozinha_22.jpg" loading="lazy"><span class="m-tag">Cozinha</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_01.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_02.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_03.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_04.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_05.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_06.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_07.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_08.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_09.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_10.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_11.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_12.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_13.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_14.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="pin_banheiro_15.jpg" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="banheiro"><img src="Banheiro_Retro_70s_Mar_16_2026_2.png" loading="lazy"><span class="m-tag">Banheiro</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_01.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_02.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_03.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_04.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_05.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_06.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_07.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_08.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_09.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_10.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_11.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+    <div class="m-card" data-mc="escritorio"><img src="pin_escritorio_12.jpg" loading="lazy"><span class="m-tag">Escritório</span></div>
+  </div>
+</section>
 
-  <!-- COZINHA -->
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_01.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_02.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_03.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_04.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_05.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_06.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_07.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_08.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_09.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_10.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_11.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_12.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_13.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_14.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_15.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_16.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_17.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_18.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_19.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_20.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_21.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
-  <div class="card" data-category="cozinha"><img src="pin_cozinha_22.jpg" alt="Cozinha"><span class="tag">Cozinha</span></div>
+<!-- ════════════════════════════ SALA ════════════════════════════ -->
+<section class="page" id="page-sala">
+  <div class="page-header" style="border-top:4px solid var(--terra)">
+    <h2>Sala de Estar</h2>
+    <div class="adjectives" style="color:var(--terra)">Acolhedora · Com história · Para receber · Cheia de vida</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st">O Que Queremos Sentir</div>
+      <p class="vision">
+        Uma sala que conta uma história — não uma vitrine de loja.
+        Queremos receber amigos, tomar vinho, ouvir música ao redor de
+        um ambiente com camadas: livros, plantas, objetos com memória.
+        Metal cromado presente (não só como sotaque), madeira escura,
+        verde-musgo como cor de referência dos tecidos. O DNA dos anos 70
+        do prédio como inspiração — não como tema ou fantasia.
+        A estante é o centro da sala. A TV não é.
+      </p>
+      <div class="st">Decisões Confirmadas</div>
+      <ul class="brief">
+        <li>Sofá ≥ 2m — verde-musgo/veludo (ref. Togo / Estofados Lutes)</li>
+        <li>Poltronas estrutura tubular cromada + couro escuro (ref. Wassily)</li>
+        <li>Estante biblioteca parede inteira — elemento focal da sala</li>
+        <li>Mesa de jantar para 6+ pessoas — funcional e bonita</li>
+        <li>Espelho côncavo/esférico metálico grande — peça principal</li>
+        <li>Luminária pendente (estilo Noguchi ou similar) — centro</li>
+        <li>Luminária de chão âmbar (linho ou rattan)</li>
+        <li>Tapete escuro como âncora do ambiente</li>
+        <li>Mesa de entrada + sapateira — corredor planejado</li>
+        <li>Ficus lyrata + Monstera em vasos cerâmicos grandes</li>
+        <li>Gatificação integrada ao projeto da sala</li>
+        <li>SEM TV como foco — se houver, secundária e discreta</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Integração cozinha/sala: janela, passa-prato ou abertura?</li>
+        <li>Taquinho sob vinílico — condição real só após remoção</li>
+        <li>Corredor de entrada: como criar continuidade visual com a sala?</li>
+        <li>Pé direito ~2,70m: iluminação precisa ser estratégica</li>
+        <li>Posição da estante: parede mais longa ou parede de destaque?</li>
+        <li>Tapete: tamanho ideal para ancorar sem encolher o espaço?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8633.jpeg" alt="Sala ângulo 1" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8633 — Sala (ângulo 1)</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8634.jpeg" alt="Sala ângulo 2" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8634 — Sala (ângulo 2)</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8636.jpeg" alt="Sala ângulo 3" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8636 — Sala (ângulo 3)</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Sala</div>
+  <div class="filmstrip">
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_01.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_02.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_03.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_04.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_05.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_06.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_07.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_08.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_09.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_10.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_11.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_sala_12.jpg" loading="lazy"></div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Sala de Estar</span><span></span></div>
+</section>
 
-  <!-- BANHEIRO -->
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_01.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_02.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_03.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_04.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_05.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_06.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_07.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_08.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_09.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_10.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_11.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_12.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_13.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_14.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="pin_banheiro_15.jpg" alt="Banheiro"><span class="tag">Banheiro</span></div>
-  <div class="card" data-category="banheiro"><img src="Banheiro_Retro_70s_Mar_16_2026_2.png" alt="Banheiro Retrô 70s"><span class="tag">Banheiro</span></div>
+<!-- ════════════════════════════ QUARTO ════════════════════════════ -->
+<section class="page" id="page-quarto">
+  <div class="page-header" style="border-top:4px solid var(--verde)">
+    <h2>Quarto Casal</h2>
+    <div class="adjectives" style="color:var(--verde)">Sereno · Japandi · Íntimo · Refúgio</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st verde">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--verde)">
+        Entrar e relaxar imediatamente. Paleta fria e serena —
+        azul japonês nas paredes. Piso taquinho escuro como base sólida.
+        Nada desnecessário, cada objeto com propósito.
+        Madeira walnut quente contrastando com o azul frio.
+        Tecidos naturais (linho, algodão) criando leveza.
+        Luminária de papel como único ponto de calor âmbar no frio do ambiente.
+        Penteadeira integrada ao projeto — não um móvel comum de quarto.
+      </p>
+      <div class="st verde">Configuração Definida</div>
+      <ul class="brief verde">
+        <li>Dimensões: 2,85m × 4,40m</li>
+        <li>Cabeceira: parede direita (em direção à janela)</li>
+        <li>Roupeiro: parede de fundo — 2m em walnut escuro</li>
+        <li>Cômoda + espelho: parede esquerda</li>
+        <li>Penteadeira: integrada ao projeto do quarto</li>
+        <li>Janela: parede superior / fundo</li>
+        <li>Porta: parede esquerda, abre em direção ao fundo</li>
+      </ul>
+      <div class="st verde">Decisões Confirmadas</div>
+      <ul class="brief verde">
+        <li>Cama queen plataforma baixa — walnut escuro</li>
+        <li>2× criados-mudos nogueira c/ gavetas</li>
+        <li>Roupeiro 2m walnut — parede de fundo</li>
+        <li>Cômoda walnut ~90cm — parede esquerda</li>
+        <li>Espelho 1,70 × 1,10m, moldura metal escuro</li>
+        <li>Penteadeira planejada — integrada ao projeto</li>
+        <li>Paredes: azul-sereno japonês</li>
+        <li>Piso: taquinho pequeno padrão (confirmar)</li>
+        <li>Cortinas: linho ou algodão natural</li>
+        <li>Luminária de papel (Noguchi) — ponto âmbar</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Vinílico sobre taquinho — condição real após remoção</li>
+        <li>Ventilação: fluxo entre porta e janela — verificar</li>
+        <li>Luz de leitura: pontos dos dois lados da cama?</li>
+        <li>Penteadeira: onde melhor encaixar no layout?</li>
+        <li>Cabeceira: só encostada ou com nicho embutido?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8650.jpeg" alt="Quarto ângulo 1" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8650 — Quarto casal (ângulo 1)</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8647.jpeg" alt="Quarto ângulo 2" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8647 — Quarto casal (ângulo 2)</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8651.jpeg" alt="Quarto ângulo 3" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8651 — Quarto casal (ângulo 3)</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Quarto</div>
+  <div class="filmstrip">
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_01.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_02.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_03.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_04.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_05.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_06.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_07.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_08.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_09.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_10.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_11.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_quarto_12.jpg" loading="lazy"></div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Quarto Casal</span><span></span></div>
+</section>
 
-  <!-- ESCRITÓRIO -->
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_01.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_02.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_03.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_04.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_05.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_06.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_07.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_08.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_09.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_10.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_11.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
-  <div class="card" data-category="escritorio"><img src="pin_escritorio_12.jpg" alt="Escritório"><span class="tag">Escritório</span></div>
+<!-- ════════════════════════════ COZINHA ════════════════════════════ -->
+<section class="page" id="page-cozinha">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Cozinha</h2>
+    <div class="adjectives" style="color:var(--amber)">Escura · Encorpada · Ateliê · Integrada</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st amber">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--amber)">
+        Uma cozinha de chef amador — intensa, quente, com cheiro de especiaria.
+        Superfícies escuras e madeira quente convivendo com metal e cerâmica.
+        Coisas boas expostas como numa galeria: panelas de ferro e cobre,
+        temperos em vidro, cerâmicas artesanais. Não quer parecer cozinha
+        profissional — quer parecer que alguém vive e cozinha aqui de verdade.
+        Integrada com a sala, mas com personalidade própria.
+      </p>
+      <div class="st verde">O Que Fica (Não Mudar)</div>
+      <ul class="brief verde">
+        <li>Armários inferiores: cinza escuro fosco ✓</li>
+        <li>Bancada: granito cinza ✓</li>
+        <li>Cooktop a gás ✓</li>
+        <li>Cobogós — saída para área de serviço: PRESERVAR</li>
+        <li>Piso hidráulico floral área de serviço: PRESERVAR</li>
+      </ul>
+      <div class="st amber">O Que Transforma</div>
+      <ul class="brief amber">
+        <li>Backsplash: azulejo 10×10 terracota queimado</li>
+        <li>2 prateleiras abertas em madeira escura — comprimento total da bancada</li>
+        <li>Iluminação: LED âmbar sob prateleira inferior</li>
+        <li>Torneira: cobre / dourado</li>
+        <li>Armário alto em madeira escura — uma extremidade</li>
+        <li>Piso: porcelanato creme, padrão geométrico leve</li>
+        <li>Geladeira: retrô em creme ou preta fosca</li>
+        <li>Lava-louças: instalada corretamente e integrada</li>
+        <li>Lava e seca: área de serviço planejada para ela</li>
+        <li>Exposição: panelas ferro/cobre, cerâmicas, vidros</li>
+        <li>Gestão de cabos da cozinha planejada</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Integração cozinha/sala: janela, passa-prato ou abertura?</li>
+        <li>Porta área de serviço: vão existente ou nova abertura?</li>
+        <li>Exaustor/coifa: posição e tipo — integrar ou valorizar?</li>
+        <li>Mix exposição × escondido: eletrodomésticos pequenos</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8640.jpeg" alt="Área de serviço" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8640 — Área de serviço + tanque</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8643.jpeg" alt="Cobogós" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8643 — Cobogós · saída cozinha</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8642.jpeg" alt="Cozinha" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8642 — Cozinha</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Cozinha</div>
+  <div class="filmstrip">
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_01.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_02.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_03.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_04.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_05.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_06.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_07.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_08.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_09.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_10.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_11.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_12.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_13.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_14.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_15.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_16.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_17.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_18.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_19.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_20.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_21.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_cozinha_22.jpg" loading="lazy"></div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Cozinha</span><span></span></div>
+</section>
 
-  <!-- ANTES -->
-  <div class="card" data-category="antes"><img src="IMG_8633.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8634.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8635.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8636.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8637.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8638.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8639.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8640.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8641.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8642.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8643.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8644.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8645.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8646.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8647.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8648.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8649.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8650.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8651.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8652.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8653.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8654.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8655.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8656.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8657.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8658.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8659.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8660.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8661.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8662.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8663.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8665.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8666.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8667.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8669.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8670.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8671.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_8672.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_9001.jpeg" alt="Antes"><span class="tag">Antes</span></div>
-  <div class="card" data-category="antes"><img src="IMG_9274.jpeg" alt="Antes"><span class="tag">Antes</span></div>
+<!-- ════════════════════════════ BANHEIRO SOCIAL ════════════════════════════ -->
+<section class="page" id="page-banheiro">
+  <div class="page-header" style="border-top:4px solid var(--bordo)">
+    <h2>Banheiro Social</h2>
+    <div class="adjectives" style="color:var(--bordo)">Elegante · Mid-century · Contraste marcante · DNA do prédio</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st bordo">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--bordo)">
+        Elegância com personalidade — não quer ser neutro.
+        Contraste marcante entre o azulejo original (preservado) e
+        o bordô vibrante do box. O DNA do prédio está no azulejo:
+        geométrico-floral bege/dourado — esse fica, todo o resto dialoga com ele.
+      </p>
+      <div class="st bordo">Decisões Confirmadas</div>
+      <ul class="brief bordo">
+        <li>Azulejo geométrico-floral bege/dourado original: PRESERVAR</li>
+        <li>Box: azulejo bordeaux/vinho brilhante — do chão ao teto</li>
+        <li>Armário: flutuante walnut horizontal</li>
+        <li>Tampo: mármore claro, cuba embutida</li>
+        <li>Espelho: horizontal, moldura fina escura</li>
+        <li>Metais: dourado / bronze</li>
+        <li>Iluminação: arandela dourada na parede + spots</li>
+        <li>Piso: a definir com a arquiteta</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Piso do banheiro social: proposta da arquiteta bem-vinda</li>
+        <li>Box: cortina ou porta? Tipo de fechamento?</li>
+        <li>Proporção armário horizontal × espaço disponível</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Estado Atual</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8655.jpeg" alt="Banheiro" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8655 — Banheiro social</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8656.jpeg" alt="Banheiro detalhe" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8656 — Detalhe azulejo original</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="Banheiro_Retro_70s_Mar_16_2026_2.png" alt="Conceito 70s" loading="lazy">
+      </div>
+      <div class="photo-label">Conceito — Banheiro Retrô 70s</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Banheiro</div>
+  <div class="filmstrip">
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_01.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_02.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_03.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_04.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_05.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_06.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_07.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_08.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_09.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_10.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_11.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_12.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_13.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_14.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_banheiro_15.jpg" loading="lazy"></div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Banheiro Social</span><span></span></div>
+</section>
 
+<!-- ════════════════════════════ LAVABO ════════════════════════════ -->
+<section class="page" id="page-lavabo">
+  <div class="page-header" style="border-top:4px solid var(--mid)">
+    <h2>Lavabo</h2>
+    <div class="adjectives" style="color:var(--mid)">Imersivo · Dramático · ~90 × 150 cm · Volume pequeno, impacto enorme</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st mid">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--mid)">
+        Um lavabo que choca — positivamente.
+        Cimento queimado total, pia bebedouro de antiquário,
+        espelho elaborado. A visita que entrar vai comentar.
+        Volume pequeno, impacto enorme.
+      </p>
+      <div class="st mid">O Que Queremos</div>
+      <ul class="brief mid">
+        <li>Cimento queimado do chão ao teto (total)</li>
+        <li>Pia louça estilo bebedouro antigo</li>
+        <li>Torneira bica antiga</li>
+        <li>Espelho moldura elaborada / antigada</li>
+        <li>Basculante: luz natural mínima</li>
+      </ul>
+      <div class="st bordo">Pendências</div>
+      <ul class="brief bordo">
+        <li>Pia + torneira: a garimpar em antiquário</li>
+        <li>Espelho: a garimpar em antiquário</li>
+        <li>Volume apertado: como trabalhar?</li>
+        <li>Referências visuais: a adicionar</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Volume apertado (~90 × 150 cm): como melhor aproveitar?</li>
+        <li>Cimento queimado: aplicação total viável no espaço?</li>
+        <li>Iluminação: como criar drama sem afogar o espaço?</li>
+        <li>Ventilação: basculante suficiente?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st mid">Registro Fotográfico</div>
+      <div style="background:var(--walnut);border-radius:4px;padding:24px;text-align:center;margin-bottom:16px;">
+        <div style="font-family:'Helvetica Neue',sans-serif;font-size:11px;color:var(--mid);line-height:1.8;">
+          Sem registro fotográfico<br>disponível para esta área.<br><br>
+          <span style="color:var(--terra)">Adicionar fotos do lavabo atual.</span>
+        </div>
+      </div>
+      <div class="st mid" style="margin-top:24px">Dimensões</div>
+      <table class="dt">
+        <tr><td>Largura</td><td>~90 cm</td></tr>
+        <tr><td>Comprimento</td><td>~150 cm</td></tr>
+        <tr><td>Classificação</td><td>Lavabo compacto</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Lavabo (a adicionar)</div>
+  <div class="filmstrip" style="padding:24px 48px;justify-content:flex-start;">
+    <div style="font-family:'Helvetica Neue',sans-serif;font-size:11px;color:var(--mid);font-style:italic;">
+      Adicione imagens de referência para o lavabo nesta seção do HTML.
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Lavabo</span><span></span></div>
+</section>
+
+<!-- ════════════════════════════ ESCRITÓRIO ════════════════════════════ -->
+<section class="page" id="page-escritorio">
+  <div class="page-header" style="border-top:4px solid var(--mid)">
+    <h2>Segundo Quarto / Escritório</h2>
+    <div class="adjectives" style="color:var(--mid)">Duplo uso · Hóspedes · Trabalho · Funcional</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st mid">O Que Queremos Sentir</div>
+      <p class="vision" style="border-color:var(--mid)">
+        Um quarto que funciona como escritório mas não parece só escritório.
+        Quando tem hóspede, funciona como quarto de verdade.
+        Quando estamos trabalhando, é um espaço focado, organizado,
+        sem bagunça visível. A gestão de cabos e o lugar do modem/roteador
+        são parte fundamental do projeto desse ambiente.
+      </p>
+      <div class="st mid">Necessidades Confirmadas</div>
+      <ul class="brief mid">
+        <li>Cama de hóspedes (solteiro ou casal pequeno)</li>
+        <li>Mesa de trabalho com gestão de cabos planejada</li>
+        <li>Lugar designado para modem e roteador — escondido</li>
+        <li>Armário / roupeiro para hóspede</li>
+        <li>Iluminação de trabalho + iluminação de dormir</li>
+        <li>Ambiente que não pareça escritório quando usado como quarto</li>
+      </ul>
+      <div class="st verde">Elementos Originais a Preservar</div>
+      <ul class="brief verde">
+        <li><strong>Cobogós</strong> — saída cozinha / entrada área de serviço. PRESERVAR.</li>
+        <li><strong>Azulejo banheiro social</strong> — geométrico-floral bege e dourado. Ponto de partida visual.</li>
+        <li><strong>Piso hidráulico floral</strong> — cozinha e área de serviço. PRESERVAR e revelar.</li>
+        <li><strong>Taquinho de madeira</strong> — sob vinílico: sala, quartos, corredor. Condicionar após remoção.</li>
+      </ul>
+      <div class="st bordo">Questões para a Arquiteta</div>
+      <ul class="brief bordo">
+        <li>Cama: embutida, dobrável ou convencional?</li>
+        <li>Mesa de trabalho: parede inteira ou só uma área?</li>
+        <li>Isolamento acústico do escritório — vale pensar?</li>
+      </ul>
+    </div>
+    <div class="col-right">
+      <div class="st verde">Elementos Originais</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8643.jpeg" alt="Cobogós originais" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8643 — Cobogós originais · preservar</div>
+      <div class="photo-img" onclick="lbOpen(this.querySelector('img'))">
+        <img src="IMG_8644.jpeg" alt="Detalhe cobogós" loading="lazy">
+      </div>
+      <div class="photo-label">IMG_8644 — Detalhe cobogós · sombras e luz</div>
+    </div>
+  </div>
+  <div class="filmstrip-label">Inspirações · Referências Visuais — Escritório</div>
+  <div class="filmstrip">
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_01.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_02.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_03.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_04.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_05.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_06.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_07.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_08.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_09.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_10.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_11.jpg" loading="lazy"></div>
+    <div class="filmstrip-slot" onclick="lbOpen(this.querySelector('img'))"><img src="pin_escritorio_12.jpg" loading="lazy"></div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Escritório</span><span></span></div>
+</section>
+
+<!-- ════════════════════════════ ANTES ════════════════════════════ -->
+<section class="page" id="page-antes">
+  <div class="page-header" style="border-top:4px solid var(--creme-d)">
+    <h2>Estado Atual</h2>
+    <div class="adjectives" style="color:var(--creme-d)">Antes · Registro · Março 2026</div>
+  </div>
+  <div class="masonry" id="antes-grid">
+    <div class="m-card" data-mc="antes"><img src="IMG_8633.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8634.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8635.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8636.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8637.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8638.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8639.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8640.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8641.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8642.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8643.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8644.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8645.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8646.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8647.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8648.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8649.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8650.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8651.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8652.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8653.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8654.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8655.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8656.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8657.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8658.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8659.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8660.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8661.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8662.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8663.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8665.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8666.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8667.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8669.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8670.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8671.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_8672.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_9001.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+    <div class="m-card" data-mc="antes"><img src="IMG_9274.jpeg" loading="lazy"><span class="m-tag">Antes</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════ PRÓXIMOS PASSOS ════════════════════════════ -->
+<section class="page" id="page-proximos">
+  <div class="page-header" style="border-top:4px solid var(--amber)">
+    <h2>Perguntas &amp; Próximos Passos</h2>
+    <div class="adjectives" style="color:var(--amber)">Dúvidas abertas para a primeira reunião</div>
+  </div>
+  <div class="columns">
+    <div class="col-left">
+      <div class="st amber">Perguntas para a Arquiteta</div>
+      <div class="qr"><span class="tag">Sala</span> Como resolver a relação visual entrada / sala?</div>
+      <div class="qr"><span class="tag">Sala</span> Integração cozinha/sala — abertura, janela ou passa-prato?</div>
+      <div class="qr"><span class="tag">Sala</span> Taquinho: estratégia de revelação e acabamento?</div>
+      <div class="qr"><span class="tag">Sala</span> Pé-direito ~2,70m: iluminação para ganhar altura visual?</div>
+      <div class="qr"><span class="tag">Quarto</span> Nicho embutido na cabeceira — viável sem obra pesada?</div>
+      <div class="qr"><span class="tag">Quarto</span> Melhor posição para a penteadeira no layout?</div>
+      <div class="qr"><span class="tag">Quarto</span> Luz de leitura dos dois lados da cama?</div>
+      <div class="qr"><span class="tag">Cozinha</span> Coifa/exaustor: posição ideal para o layout?</div>
+      <div class="qr"><span class="tag">Cozinha</span> Lava-louças: integração total ou semi-integrada?</div>
+      <div class="qr"><span class="tag">Banheiro</span> Qual piso dialoga com o azulejo original?</div>
+      <div class="qr"><span class="tag">Lavabo</span> Volume apertado: como trabalhar?</div>
+      <div class="qr"><span class="tag">Escritório</span> Cama embutida, dobrável ou convencional?</div>
+      <div class="qr"><span class="tag">Geral</span> Cronograma: qual a sequência lógica das obras?</div>
+    </div>
+    <div class="col-right">
+      <div class="st amber">Decisões de Design Pendentes</div>
+      <ul class="brief amber">
+        <li>Piso do banheiro social — definir com arquiteta</li>
+        <li>Integração cozinha/sala — abertura ou janela</li>
+        <li>Cama segundo quarto: tipo e tamanho</li>
+        <li>Porta área de serviço — vão existente ou nova abertura</li>
+        <li>Acesso ao lavabo — avaliar viabilidade + impacto</li>
+        <li>Organização área de serviço (tanque + cobogós + lava e seca)</li>
+      </ul>
+      <div class="st mid">Móveis e Peças a Orçar</div>
+      <ul class="brief mid">
+        <li>Sofá ≥ 2m — verde-musgo/veludo (ref. Togo / Lutes)</li>
+        <li>Poltronas tubular cromado + couro (ref. Wassily)</li>
+        <li>Mesa de jantar 6+ lugares</li>
+        <li>Cama queen plataforma walnut — quarto casal</li>
+        <li>2× criados-mudos nogueira c/ gavetas</li>
+        <li>Roupeiro 2m walnut — quarto casal</li>
+        <li>Penteadeira — integrada ao projeto</li>
+        <li>Sapateira + mesa de entrada — corredor</li>
+      </ul>
+      <div class="st amber">Peças a Garimpar</div>
+      <ul class="brief amber">
+        <li>Pia louça bebedouro antigo + torneira bica — lavabo</li>
+        <li>Espelho elaborado / antigado — lavabo</li>
+        <li>Espelho côncavo / esférico metálico grande — sala</li>
+        <li>Poltronas cromadas vintage — sala</li>
+      </ul>
+      <div class="signoff">
+        <strong>Bruno Trombin &amp; Raquel Ramos da Fonseca</strong>
+        <p>Edifício Skorpius — Apto 303 — 3º Pavimento — Porto Alegre<br>
+        brtrombin@gmail.com · Março 2026</p>
+      </div>
+    </div>
+  </div>
+  <div class="pfoot"><span>Briefing — Projeto Skorpius</span><span>Próximos Passos</span><span></span></div>
+</section>
+
+</main>
 </div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightbox-close">&times;</button>
-  <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8249;</button>
-  <img src="" alt="" id="lightbox-img">
-  <button class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</button>
+  <button class="lb-close" id="lb-close">&times;</button>
+  <button class="lb-nav lb-prev" id="lb-prev">&#8249;</button>
+  <img src="" alt="" id="lb-img">
+  <button class="lb-nav lb-next" id="lb-next">&#8250;</button>
 </div>
 
-<footer>
-  Apt 303 &nbsp;·&nbsp; Edifício Skorpius &nbsp;·&nbsp; Bruno &amp; Raquel
-</footer>
-
 <script>
-  const cards = Array.from(document.querySelectorAll('.card'));
-  const buttons = document.querySelectorAll('.filters button[data-filter]');
-  const countEl = document.getElementById('count');
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
+const pages = ['capa','overview','moodboard','sala','quarto','cozinha','banheiro','lavabo','escritorio','antes','proximos'];
+const stripeColors = {
+  capa:'#C15B35', overview:'#C49A28', moodboard:'#C15B35',
+  sala:'#C15B35', quarto:'#49583A', cozinha:'#C49A28',
+  banheiro:'#7D2535', lavabo:'#7A5C40', escritorio:'#7A5C40',
+  antes:'#BFB8AA', proximos:'#C49A28'
+};
 
-  let activeFilter = 'all';
-  let visibleCards = [];
-  let currentIndex = 0;
-
-  function updateCount() {
-    const visible = cards.filter(c => !c.classList.contains('hidden')).length;
-    countEl.textContent = visible + ' imagens';
+function go(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    n.style.borderLeftColor = 'transparent';
+  });
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (el) {
+    el.classList.add('active');
+    const dot = el.querySelector('.nav-dot');
+    if (dot) el.style.borderLeftColor = dot.style.background;
   }
+  document.getElementById('stripe').style.background = stripeColors[id] || '#C15B35';
+  document.getElementById('main').scrollTop = 0;
+}
 
-  function filterCards(category) {
-    activeFilter = category;
-    cards.forEach(card => {
-      const match = category === 'all' || card.dataset.category === category;
-      card.classList.toggle('hidden', !match);
-    });
-    updateCount();
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').classList.contains('open')) return;
+  const cur = document.querySelector('.page.active');
+  if (!cur) return;
+  const id = cur.id.replace('page-','');
+  const idx = pages.indexOf(id);
+  if (e.key === 'ArrowRight' && idx < pages.length - 1) {
+    go(pages[idx+1], document.querySelector('[data-page="'+pages[idx+1]+'"]'));
   }
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterCards(btn.dataset.filter);
-    });
-  });
-
-  // Lightbox
-  function openLightbox(card) {
-    visibleCards = cards.filter(c => !c.classList.contains('hidden'));
-    currentIndex = visibleCards.indexOf(card);
-    lightboxImg.src = card.querySelector('img').src;
-    lightbox.classList.add('open');
+  if (e.key === 'ArrowLeft' && idx > 0) {
+    go(pages[idx-1], document.querySelector('[data-page="'+pages[idx-1]+'"]'));
   }
+});
 
-  function navigate(dir) {
-    currentIndex = (currentIndex + dir + visibleCards.length) % visibleCards.length;
-    lightboxImg.src = visibleCards[currentIndex].querySelector('img').src;
-  }
+// Init stripe color
+const first = document.querySelector('.nav-item.active');
+if (first) { const d = first.querySelector('.nav-dot'); if (d) first.style.borderLeftColor = d.style.background; }
 
-  cards.forEach(card => {
-    card.addEventListener('click', () => openLightbox(card));
+// Moodboard filter
+const moodCards = Array.from(document.querySelectorAll('#mood-grid .m-card'));
+const moodBtns = document.querySelectorAll('[data-mf]');
+const moodCount = document.getElementById('mood-count');
+
+function updateMoodCount() {
+  const v = moodCards.filter(c => !c.classList.contains('hidden')).length;
+  if (moodCount) moodCount.textContent = v + ' imagens';
+}
+
+moodBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    moodBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.mf;
+    moodCards.forEach(c => c.classList.toggle('hidden', f !== 'all' && c.dataset.mc !== f));
+    updateMoodCount();
   });
+});
+updateMoodCount();
 
-  document.getElementById('lightbox-close').addEventListener('click', () => {
-    lightbox.classList.remove('open');
-  });
+// Lightbox
+let lbImages = [];
+let lbIndex = 0;
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
 
-  document.getElementById('lightbox-prev').addEventListener('click', (e) => {
-    e.stopPropagation();
-    navigate(-1);
-  });
+function lbOpen(img) {
+  const page = document.querySelector('.page.active');
+  const allImgs = Array.from(page.querySelectorAll('img'));
+  lbImages = allImgs;
+  lbIndex = allImgs.indexOf(img);
+  lbImg.src = img.src;
+  lightbox.classList.add('open');
+}
 
-  document.getElementById('lightbox-next').addEventListener('click', (e) => {
-    e.stopPropagation();
-    navigate(1);
-  });
+function lbNav(dir) {
+  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+  lbImg.src = lbImages[lbIndex].src;
+}
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) lightbox.classList.remove('open');
-  });
+document.getElementById('lb-close').addEventListener('click', () => lightbox.classList.remove('open'));
+document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); lbNav(-1); });
+document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); lbNav(1); });
+lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
 
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') lightbox.classList.remove('open');
-    if (e.key === 'ArrowLeft') navigate(-1);
-    if (e.key === 'ArrowRight') navigate(1);
-  });
+// Masonry grid lightbox
+document.querySelectorAll('.m-card').forEach(card => {
+  card.addEventListener('click', () => lbOpen(card.querySelector('img')));
+});
 
-  updateCount();
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape') lightbox.classList.remove('open');
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+});
 </script>
 </body>
 </html>
