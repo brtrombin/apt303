@@ -247,6 +247,57 @@
   }
   .m-card:hover .m-tag { opacity:1; }
 
+  /* ── PALETTE ── */
+  /* thin bar injected after every page-header */
+  .palette-bar {
+    display:flex; width:100%; height:8px; flex-shrink:0;
+  }
+  .pal-bar-swatch {
+    flex:1; cursor:pointer; position:relative; transition:flex .2s;
+  }
+  .pal-bar-swatch:hover { flex:2.5; }
+  .pal-bar-swatch::after {
+    content:attr(data-hex); position:absolute; top:12px; left:50%;
+    transform:translateX(-50%); background:var(--dark); color:var(--creme);
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; letter-spacing:.06em;
+    padding:3px 8px; border-radius:3px; white-space:nowrap;
+    opacity:0; transition:opacity .15s; pointer-events:none; z-index:20;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  .pal-bar-swatch:hover::after { opacity:1; }
+
+  /* full palette section on moodboard page */
+  #palette-section-wrap {
+    background:rgba(0,0,0,.2); padding:14px 20px 18px;
+    border-bottom:1px solid #1a120a;
+  }
+  #palette-section-label {
+    font-family:'Helvetica Neue',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--mid);
+    margin-bottom:10px;
+  }
+  #palette-section {
+    display:flex; gap:6px; flex-wrap:wrap;
+  }
+  .pal-swatch-full {
+    width:48px; flex-shrink:0; border-radius:4px; cursor:pointer;
+    position:relative; transition:transform .15s;
+  }
+  .pal-swatch-full:hover { transform:scale(1.08); z-index:2; }
+  .pal-hex {
+    display:block; text-align:center; font-family:'Helvetica Neue',sans-serif;
+    font-size:8px; color:var(--mid); letter-spacing:.04em;
+    padding-top:4px; padding-bottom:2px;
+  }
+  .pal-swatch-color {
+    height:56px; border-radius:4px 4px 0 0;
+  }
+  @media(max-width:768px) {
+    .pal-swatch-full { width:40px; }
+    .pal-swatch-color { height:44px; }
+    #palette-section-wrap { padding:10px 14px 14px; }
+  }
+
   /* LIGHTBOX */
   .lightbox {
     display:none; position:fixed; inset:0; z-index:1000;
@@ -531,6 +582,10 @@
     <button data-mf="banheiro">Banheiro</button>
     <button data-mf="escritorio">Escritório</button>
     <span class="grid-count" id="mood-count"></span>
+  </div>
+  <div id="palette-section-wrap">
+    <div id="palette-section-label">Paleta extraída do moodboard · clique para copiar hex</div>
+    <div id="palette-section"><span style="font-family:'Helvetica Neue',sans-serif;font-size:10px;color:var(--mid)">Extraindo cores…</span></div>
   </div>
   <div class="masonry" id="mood-grid">
     <div class="m-card" data-mc="sala"><img src="pin_sala_01.jpg" loading="lazy"><span class="m-tag">Sala</span></div>
@@ -1240,6 +1295,161 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') lbNav(-1);
   if (e.key === 'ArrowRight') lbNav(1);
 });
+
+// ─────────────────────────────────────────────
+//  PALETTE EXTRACTION (k-means via canvas)
+// ─────────────────────────────────────────────
+const PAL_K    = 14;
+const PAL_KEY  = 'apt303-palette-v2';
+
+function _rgbToHsl(r,g,b) {
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+  let h=0, s=0, l=(mx+mn)/2;
+  if(mx!==mn) {
+    const d=mx-mn;
+    s = l>.5 ? d/(2-mx-mn) : d/(mx+mn);
+    switch(mx) {
+      case r: h=((g-b)/d+(g<b?6:0))/6; break;
+      case g: h=((b-r)/d+2)/6; break;
+      case b: h=((r-g)/d+4)/6; break;
+    }
+  }
+  return [h,s,l];
+}
+
+function _dist2(a,b){ return (a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2; }
+
+function _hex(r,g,b){ return '#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join(''); }
+
+function _kmeans(px, k, iters=18) {
+  const ci = new Set();
+  while(ci.size<k) ci.add(Math.floor(Math.random()*px.length));
+  let c = [...ci].map(i=>px[i].slice());
+  for(let it=0;it<iters;it++){
+    const s = Array.from({length:k},()=>[0,0,0,0]);
+    for(const p of px){
+      let mn=Infinity, best=0;
+      for(let j=0;j<k;j++){const d=_dist2(p,c[j]); if(d<mn){mn=d;best=j;}}
+      s[best][0]+=p[0]; s[best][1]+=p[1]; s[best][2]+=p[2]; s[best][3]++;
+    }
+    let changed=false;
+    for(let j=0;j<k;j++){
+      if(!s[j][3]) continue;
+      const nr=s[j][0]/s[j][3], ng=s[j][1]/s[j][3], nb=s[j][2]/s[j][3];
+      if(Math.abs(nr-c[j][0])+Math.abs(ng-c[j][1])+Math.abs(nb-c[j][2])>.5) changed=true;
+      c[j]=[nr,ng,nb];
+    }
+    if(!changed) break;
+  }
+  return c.map(v=>v.map(Math.round));
+}
+
+function _sampleImg(src) {
+  return new Promise(res=>{
+    const img = new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      const MAX=100;
+      const sc=Math.min(1,MAX/Math.max(img.naturalWidth,img.naturalHeight,1));
+      const w=Math.max(1,Math.round(img.naturalWidth*sc));
+      const h=Math.max(1,Math.round(img.naturalHeight*sc));
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      const ctx=cv.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+      try{
+        const d=ctx.getImageData(0,0,w,h).data;
+        const px=[];
+        for(let i=0;i<d.length;i+=16){
+          const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];
+          if(a<180) continue;
+          if(r>235&&g>235&&b>235) continue; // near-white
+          if(r<20&&g<20&&b<20) continue;    // near-black
+          px.push([r,g,b]);
+        }
+        res(px);
+      }catch(e){res([]);}
+    };
+    img.onerror=()=>res([]);
+    img.src=src;
+  });
+}
+
+async function buildPalette() {
+  try{
+    const hit=localStorage.getItem(PAL_KEY);
+    if(hit) return JSON.parse(hit);
+  }catch(e){}
+
+  const srcs=[...document.querySelectorAll('#mood-grid .m-card img')]
+    .map(i=>i.getAttribute('src')).filter(Boolean)
+    .sort(()=>Math.random()-.5).slice(0,30);
+
+  const allPx=[];
+  await Promise.all(srcs.map(async s=>{ const px=await _sampleImg(s); allPx.push(...px); }));
+
+  if(allPx.length<PAL_K) return null;
+
+  const step=Math.max(1,Math.floor(allPx.length/4000));
+  const reduced=allPx.filter((_,i)=>i%step===0);
+  const centroids=_kmeans(reduced,PAL_K);
+
+  const palette=centroids
+    .map(([r,g,b])=>{
+      const [h,s,l]=_rgbToHsl(r,g,b);
+      return {r,g,b,hex:_hex(r,g,b),h,s,l};
+    })
+    .sort((a,b)=>a.h-b.h);
+
+  try{ localStorage.setItem(PAL_KEY,JSON.stringify(palette)); }catch(e){}
+  return palette;
+}
+
+function applyPalette(palette) {
+  if(!palette||!palette.length) return;
+
+  // 1 — full swatches on moodboard page
+  const sec=document.getElementById('palette-section');
+  if(sec){
+    sec.innerHTML='';
+    palette.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='pal-swatch-full';
+      div.innerHTML=`<div class="pal-swatch-color" style="background:${c.hex}"></div><span class="pal-hex">${c.hex}</span>`;
+      div.title='Clique para copiar';
+      div.addEventListener('click',()=>{
+        navigator.clipboard.writeText(c.hex).catch(()=>{});
+        div.style.outline='2px solid rgba(255,255,255,.7)';
+        setTimeout(()=>div.style.outline='',700);
+      });
+      sec.appendChild(div);
+    });
+  }
+
+  // 2 — thin bar injected after every .page-header (except moodboard & antes)
+  const skip=new Set(['page-moodboard','page-antes','page-capa']);
+  document.querySelectorAll('.page').forEach(pg=>{
+    if(skip.has(pg.id)) return;
+    const header=pg.querySelector('.page-header');
+    if(!header||pg.querySelector('.palette-bar')) return;
+    const bar=document.createElement('div');
+    bar.className='palette-bar';
+    palette.forEach(c=>{
+      const sw=document.createElement('div');
+      sw.className='pal-bar-swatch';
+      sw.style.background=c.hex;
+      sw.setAttribute('data-hex',c.hex);
+      sw.addEventListener('click',()=>{
+        navigator.clipboard.writeText(c.hex).catch(()=>{});
+        sw.style.outline='2px solid rgba(255,255,255,.8)';
+        setTimeout(()=>sw.style.outline='',700);
+      });
+      bar.appendChild(sw);
+    });
+    header.insertAdjacentElement('afterend',bar);
+  });
+}
+
+buildPalette().then(applyPalette);
 </script>
 </body>
 </html>
