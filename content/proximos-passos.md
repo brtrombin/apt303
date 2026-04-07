@@ -2,43 +2,43 @@
 
 ## Perguntas para a Arquiteta
 
-- [Sala] Como resolver a relação visual entrada / sala?
-- [Sala] Integração cozinha/sala — abertura, janela ou passa-prato?
+- [Sala] Como resolver a relação visual entre a entrada e a sala?
+- [Sala] Integração cozinha/sala — abertura, janela ou balcão?
 - [Sala] Taquinho: estratégia de revelação e acabamento?
 - [Sala] Pé-direito ~2,70m: iluminação para ganhar altura visual?
 - [Quarto] Nicho embutido na cabeceira — viável sem obra pesada?
 - [Quarto] Melhor posição para a penteadeira no layout?
 - [Quarto] Luz de leitura dos dois lados da cama?
-- [Cozinha] Coifa/exaustor: posição ideal para o layout?
+- [Cozinha] Coifa/exaustor: posição ideal para o layout proposto?
 - [Cozinha] Lava-louças: integração total ou semi-integrada?
 - [Banheiro] Qual piso dialoga com o azulejo original?
 - [Lavabo] Volume apertado: como trabalhar?
 - [Escritório] Cama embutida, dobrável ou convencional?
 - [Geral] Cronograma: qual a sequência lógica das obras?
 
-## Decisões de design pendentes
+## Decisões de Design Pendentes
 
-- Piso do banheiro social — definir com arquiteta
-- Integração cozinha/sala — abertura ou janela
+- Piso do banheiro social — definir com a arquiteta
+- Integração cozinha/sala — abertura ou balcão em granilite
 - Cama segundo quarto: tipo e tamanho
 - Porta área de serviço — vão existente ou nova abertura
-- Acesso ao lavabo — avaliar viabilidade + impacto
+- Acesso ao lavabo — avaliar viabilidade e impacto
 - Organização área de serviço (tanque + cobogós + lava e seca)
 
-## Móveis e peças a orçar
+## Móveis e Peças a Orçar
 
-- Sofá ≥ 2m — verde-musgo/veludo (ref. Togo / Lutes)
-- Poltronas tubular cromado + couro (ref. Wassily)
-- Mesa de jantar 6+ lugares
-- Cama queen plataforma walnut — quarto casal
-- 2× criados-mudos nogueira c/ gavetas
-- Roupeiro 2m walnut — quarto casal
+- Sofá ≥ 2m — verde-musgo/veludo (ref. Togo / Estofados Lutes)
+- Poltronas com estrutura tubular cromada + couro (ref. Wassily)
+- Mesa de jantar para 6+ lugares
+- Cama queen de plataforma baixa — walnut escuro
+- 2× criados-mudos em nogueira com gavetas
+- Roupeiro de 2m em walnut — quarto casal
 - Penteadeira — integrada ao projeto
 - Sapateira + mesa de entrada — corredor
 
-## Peças a garimpar
+## Peças a Garimpar
 
-- Pia louça bebedouro antigo + torneira bica — lavabo
-- Espelho elaborado / antigado — lavabo
+- Pia de louça estilo bebedouro antigo + torneira bica — lavabo
+- Espelho com moldura elaborada / patinada — lavabo
 - Espelho côncavo / esférico metálico grande — sala
 - Poltronas cromadas vintage — sala

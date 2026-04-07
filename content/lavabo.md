@@ -2,14 +2,14 @@
 
 ## Visão
 
-Um lavabo que choca — positivamente.
-Cimento queimado total, pia bebedouro de antiquário, espelho elaborado.
-A visita que entrar vai comentar. Volume pequeno, impacto enorme.
+Queremos um lavabo que choca — positivamente.
+Cimento queimado total, pia de louça estilo bebedouro de antiquário, espelho elaborado.
+Toda visita que entrar vai comentar. Volume pequeno, impacto enorme.
 
-## O que queremos
+## Ideias
 
 - Cimento queimado do chão ao teto (total)
-- Pia louça estilo bebedouro antigo
+- Pia de louça estilo bebedouro antigo
 - Torneira bica antiga
-- Espelho moldura elaborada / antigada
+- Espelho com moldura elaborada / patinada
 - Basculante: luz natural mínima

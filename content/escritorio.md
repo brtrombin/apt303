@@ -2,11 +2,11 @@
 
 ## Visão
 
-Um lugar cheio de personalidade onde a criatividade é potencializada, mas que proporcione momentos de foco e produtividade.
+Queremos um lugar cheio de personalidade, onde a criatividade seja potencializada, mas que também proporcione momentos de foco e produtividade.
 
-## O que queremos
+## O Que Queremos
 
-- Mesa de trabalho da largura da parede, com espaço para nós dois
+- Mesa de trabalho na largura da parede, com espaço para nós dois
 - Gaveteiro colorido
 - Fotos tiradas por nós nas paredes
 - Cores e texturas divertidas
