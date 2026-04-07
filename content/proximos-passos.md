@@ -16,14 +16,19 @@
 - [Escritório] Cama embutida, dobrável ou convencional?
 - [Geral] Cronograma: qual a sequência lógica das obras?
 
-## Decisões de Design Pendentes
+## Decisões Pendentes (a resolver com a arquiteta)
 
-- Piso do banheiro social — definir com a arquiteta
-- Integração cozinha/sala — abertura ou balcão em granilite
-- Cama segundo quarto: tipo e tamanho
-- Porta área de serviço — vão existente ou nova abertura
-- Acesso ao lavabo — avaliar viabilidade e impacto
-- Organização área de serviço (tanque + cobogós + lava e seca)
+| Tema | Questão |
+|---|---|
+| Integração cozinha/sala | Abertura e balcão: dimensões e detalhes construtivos |
+| Lava e seca | Cozinha ou área de cobogós? |
+| Lava-louças | Integração total ou semi-integrada? |
+| Banheiro — piso | Qual granilite dialoga com o azulejo original? |
+| Banheiro — box | Vidro do chão ao teto: viável estruturalmente? |
+| Lavanderia — porta | Vão existente ou nova abertura para área de serviço? |
+| Sala — taquinho | Estratégia de revelação e acabamento |
+| Sala — iluminação | Solução para ganho de altura visual (pé-direito ~2,70m) |
+| Orçamento | Restauro de taco, janelas e portas pode cobrir escritório e lavabo? |
 
 ## Móveis e Peças a Orçar
 

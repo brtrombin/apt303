@@ -5,6 +5,17 @@
 Queremos um lugar para receber amigos, sentar juntos à mesa e conversar enquanto bebemos vinho e saboreamos uma boa comida caseira.
 Um lugar para nos jogarmos no sofá e conversarmos por horas depois de um dia cansativo — que permita conversas olho no olho.
 
+## Obras Contratadas (escopo de obra)
+
+- Integração cozinha/sala: abertura ampliada + balcão em granilite
+- Taquinho: revelar e restaurar o piso sob o vinílico existente
+- Iluminação: pontos elétricos para indireta, focal na mesa de jantar e luz central na área de convivência
+- Ar-condicionado: ponto planejado
+- Restauração da janela principal
+- Painel de madeira delimitando a área de jantar: estrutura/suporte a prever em obra
+
+> Móveis, tapetes, cortinas e decoração **não fazem parte deste contrato**.
+
 ## O Que Queremos
 
 - Sala não centrada na TV

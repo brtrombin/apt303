@@ -15,7 +15,13 @@ Bruno Trombin & Raquel Ramos da Fonseca
 
 ## Data
 
-Março de 2026
+Abril de 2026
+
+## Ambientes deste contrato
+
+- Cozinha + Lavanderia
+- Banheiro Social
+- Sala de Estar (intervenção parcial)
 
 ## Estilos base
 

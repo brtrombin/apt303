@@ -24,12 +24,11 @@
 
 ## Não Abrimos Mão
 
-- **Janelas teladas** — todas as janelas do apartamento, com persianas funcionais
-- **Máquina de lavar louça** — integrada ao projeto
+- **Janelas teladas** — todas as janelas do escopo, com persianas funcionais
+- **Lava-louças** — integrada ao projeto da cozinha
 - **Lava e seca** — área de serviço planejada para ela
-- **Mesa de jantar ≥ 6 lugares** — elemento principal da área social
-- **Estante de livros** — com poltrona confortável para leitura
-- **Cozinha integrada à sala** — sem isolamento entre cozinha e estar
-- **Casa não centrada na TV** — a TV não é o foco de nenhum ambiente
-- **Mesa de entrada** — com lugar designado para deixar itens ao chegar (sala e cozinha)
-- **Modem e roteadores** — lugar planejado, escondido, sem fio à vista (cozinha, junto ao quadro de luz)
+- **Cozinha integrada à sala** — sem isolamento entre os dois ambientes
+- **Modem e roteadores** — escondidos, sem fio à vista (junto ao quadro de luz)
+- **Sem branco puro** — sem cores frias, sem ambiente hospitalar
+- **Sem móveis planejados genéricos** — nada de "apartamento decorado de loja"
+- **Função em primeiro plano** — a forma em segundo
